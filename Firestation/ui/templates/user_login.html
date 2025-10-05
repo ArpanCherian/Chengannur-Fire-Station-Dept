@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Login - Chengannur Fire Rescue Services</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+
+    <style>
+        .toggle-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-buttons button {
+            padding: 0.6em 1.7em;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 2px solid #ef4444;
+            background: white;
+            color: #ef4444;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .toggle-buttons button.active,
+        .toggle-buttons button:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .login-form {
+            display: none;
+        }
+
+        .login-form.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card animate-fade-in">
+            <div class="login-header">
+                <div class="login-logo">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <h2>Portal Access</h2>
+                <p>Sign in to your account</p>
+            </div>
+
+            <div class="toggle-buttons">
+                <button id="btnUser" class="active" type="button">User Login</button>
+                <a href="{% url 'admin_login' %}" id="btnAdmin" class="btn btn-secondary" type="button">
+                    Admin Login
+                </a>
+            </div>
+            <!-- Django messages -->
+            {% if messages %}
+            <div>
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- User Login Form -->
+            <form method="post" id="user-login-form" action="{% url 'user_login' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username" class="form-label">User Name</label>
+                    <input type="text" id="username" name="username" class="form-input" required />
+                </div>
+                <div class="form-group">
+                    <label for="user-password" class="form-label">Password</label>
+                    <input type="password" id="user-password" name="password" class="form-input" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg btn-full">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="login-support" style="margin-top: 1.5rem;">
+                <p>Need help accessing your account?</p>
+                <p>Contact IT Support: <a href="tel:4791234570">(479) 123-4570</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

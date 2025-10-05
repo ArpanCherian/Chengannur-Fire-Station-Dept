@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #fff; /* clean white background */
+            min-height: 100vh;
+            padding: 20px;
+            color: #212529;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ff922b, #ffd43b);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+        }
+
+        .content {
+            padding: 35px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-item {
+            background: #fffaf0;
+            padding: 18px;
+            border-radius: 10px;
+            border-left: 4px solid #ff922b;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #868e96;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #212529;
+            font-weight: 500;
+            word-wrap: break-word;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 19px;
+            color: #ff6b6b;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ffe066;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .full-width-item {
+            background: #fffaf0;
+            padding: 18px;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        /* Type badges */
+        .type-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .badge-firewater {
+            background: #ffe3e3;
+            color: #c92a2a;
+        }
+
+        .badge-general {
+            background: #fff3cd;
+            color: #b8860b;
+        }
+
+        .badge-assistance {
+            background: #fff9db;
+            color: #8a6d3b;
+        }
+
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fa-solid fa-file-lines"></i>
+                Case Details
+                {% if model_type == 'firewater' %}
+                    <span class="type-badge badge-firewater">Fire/Water</span>
+                {% elif model_type == 'general' %}
+                    <span class="type-badge badge-general">General Incident</span>
+                {% elif model_type == 'assistance' %}
+                    <span class="type-badge badge-assistance">Assistance Call</span>
+                {% endif %}
+            </h1>
+            <a href="{% url 'adminviewreport' %}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="content">
+            <!-- Basic Information -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Basic Information
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Report Date</div>
+                        <div class="info-value">{{ case.form_date|date:"F d, Y" }}</div>
+                    </div>
+                    {% if model_type == 'firewater' or model_type == 'general' %}
+                    <div class="info-item">
+                        <div class="info-label">Incident Type</div>
+                        <div class="info-value">{{ case.incident|default:"N/A" }}</div>
+                    </div>
+                    {% elif model_type == 'assistance' %}
+                    <div class="info-item">
+                        <div class="info-label">Incident Type</div>
+                        <div class="info-value">{{ case.incident_type|default:"N/A" }}</div>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <div class="info-label">Reported By</div>
+                        <div class="info-value">{{ case.userName }}</div>
+                    </div>
+                    {% if case.call_number %}
+                    <div class="info-item">
+                        <div class="info-label">Call Number</div>
+                        <div class="info-value">{{ case.call_number }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Call Timeline -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-clock"></i>
+                    Call Timeline
+                </div>
+                <div class="info-grid">
+                    {% if case.call_received %}
+                    <div class="info-item">
+                        <div class="info-label">Call Received</div>
+                        <div class="info-value">{{ case.call_received }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.time_left_station %}
+                    <div class="info-item">
+                        <div class="info-label">Time Left Station</div>
+                        <div class="info-value">{{ case.time_left_station }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.time_reached_scene %}
+                    <div class="info-item">
+                        <div class="info-label">Time Reached Scene</div>
+                        <div class="info-value">{{ case.time_reached_scene }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.time_returned %}
+                    <div class="info-item">
+                        <div class="info-label">Time Returned</div>
+                        <div class="info-value">{{ case.time_returned }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Location & Contact Information -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Location & Contact Details
+                </div>
+                <div class="info-grid">
+                    {% if case.exact_location %}
+                    <div class="info-item">
+                        <div class="info-label">Exact Location</div>
+                        <div class="info-value">{{ case.exact_location }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.caller_contact %}
+                    <div class="info-item">
+                        <div class="info-label">Caller Contact</div>
+                        <div class="info-value">{{ case.caller_contact }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.source_of_call %}
+                    <div class="info-item">
+                        <div class="info-label">Source of Call</div>
+                        <div class="info-value">{{ case.source_of_call }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Fire/Water and General Incident Specific Fields -->
+            {% if model_type == 'firewater' or model_type == 'general' %}
+            
+            <!-- Nature of Incident -->
+            {% if case.nature_incident %}
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-align-left"></i>
+                    Nature of Incident
+                </div>
+                <div class="full-width-item">
+                    <div class="info-value">{{ case.nature_incident|linebreaks }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Property Details -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-building"></i>
+                    Property Details
+                </div>
+                <div class="info-grid">
+                    {% if case.occupancy_type %}
+                    <div class="info-item">
+                        <div class="info-label">Occupancy Type</div>
+                        <div class="info-value">{{ case.occupancy_type }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.construction_type %}
+                    <div class="info-item">
+                        <div class="info-label">Construction Type</div>
+                        <div class="info-value">{{ case.construction_type }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.owner_occupant %}
+                    <div class="info-item">
+                        <div class="info-label">Owner/Occupant</div>
+                        <div class="info-value">{{ case.owner_occupant }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.premises_occupancy %}
+                    <div class="info-item">
+                        <div class="info-label">Premises Occupancy</div>
+                        <div class="info-value">{{ case.premises_occupancy }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if case.owner_details %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Owner Details</div>
+                    <div class="info-value">{{ case.owner_details|linebreaks }}</div>
+                </div>
+                {% endif %}
+                {% if case.building_details %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Building Details</div>
+                    <div class="info-value">{{ case.building_details|linebreaks }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Hazards & Conditions -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Hazards & Conditions
+                </div>
+                <div class="info-grid">
+                    {% if case.electrical_chemicals %}
+                    <div class="info-item">
+                        <div class="info-label">Electrical/Chemicals</div>
+                        <div class="info-value">{{ case.electrical_chemicals }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.hazardous_materials %}
+                    <div class="info-item">
+                        <div class="info-label">Hazardous Materials</div>
+                        <div class="info-value">{{ case.hazardous_materials }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.weather_conditions %}
+                    <div class="info-item">
+                        <div class="info-label">Weather Conditions</div>
+                        <div class="info-value">{{ case.weather_conditions }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.premises_chemicals %}
+                    <div class="info-item">
+                        <div class="info-label">Premises Chemicals</div>
+                        <div class="info-value">{{ case.premises_chemicals }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.premises_hazardous %}
+                    <div class="info-item">
+                        <div class="info-label">Premises Hazardous Materials</div>
+                        <div class="info-value">{{ case.premises_hazardous }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Casualties & Rescues -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-users"></i>
+                    Casualties & Rescues
+                </div>
+                
+                <!-- Deaths -->
+                {% if case.deaths_male or case.deaths_female or case.deaths_adult or case.deaths_child %}
+                <h4 style="color: #dc3545; margin-bottom: 15px; font-size: 16px;">Deaths</h4>
+                <div class="info-grid" style="margin-bottom: 25px;">
+                    {% if case.deaths_male %}
+                    <div class="info-item">
+                        <div class="info-label">Male Deaths</div>
+                        <div class="info-value">{{ case.deaths_male }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.deaths_female %}
+                    <div class="info-item">
+                        <div class="info-label">Female Deaths</div>
+                        <div class="info-value">{{ case.deaths_female }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.deaths_adult %}
+                    <div class="info-item">
+                        <div class="info-label">Adult Deaths</div>
+                        <div class="info-value">{{ case.deaths_adult }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.deaths_child %}
+                    <div class="info-item">
+                        <div class="info-label">Child Deaths</div>
+                        <div class="info-value">{{ case.deaths_child }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Injuries -->
+                {% if model_type == 'firewater' %}
+                    {% if case.injuries_male or case.injuries_female or case.injuries_adult or case.injuries_child %}
+                    <h4 style="color: #ffc107; margin-bottom: 15px; font-size: 16px;">Injuries</h4>
+                    <div class="info-grid" style="margin-bottom: 25px;">
+                        {% if case.injuries_male %}
+                        <div class="info-item">
+                            <div class="info-label">Male Injuries</div>
+                            <div class="info-value">{{ case.injuries_male }}</div>
+                        </div>
+                        {% endif %}
+                        {% if case.injuries_female %}
+                        <div class="info-item">
+                            <div class="info-label">Female Injuries</div>
+                            <div class="info-value">{{ case.injuries_female }}</div>
+                        </div>
+                        {% endif %}
+                        {% if case.injuries_adult %}
+                        <div class="info-item">
+                            <div class="info-label">Adult Injuries</div>
+                            <div class="info-value">{{ case.injuries_adult }}</div>
+                        </div>
+                        {% endif %}
+                        {% if case.injuries_child %}
+                        <div class="info-item">
+                            <div class="info-label">Child Injuries</div>
+                            <div class="info-value">{{ case.injuries_child }}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                {% elif model_type == 'general' %}
+                    {% if case.injured %}
+                    <h4 style="color: #ffc107; margin-bottom: 15px; font-size: 16px;">Injuries</h4>
+                    <div class="info-grid" style="margin-bottom: 25px;">
+                        <div class="info-item">
+                            <div class="info-label">Injured Count</div>
+                            <div class="info-value">{{ case.injured }}</div>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endif %}
+
+                <!-- Rescued -->
+                {% if case.rescued_male or case.rescued_female or case.rescued_adult or case.rescued_child %}
+                <h4 style="color: #28a745; margin-bottom: 15px; font-size: 16px;">Rescued</h4>
+                <div class="info-grid" style="margin-bottom: 25px;">
+                    {% if case.rescued_male %}
+                    <div class="info-item">
+                        <div class="info-label">Male Rescued</div>
+                        <div class="info-value">{{ case.rescued_male }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.rescued_female %}
+                    <div class="info-item">
+                        <div class="info-label">Female Rescued</div>
+                        <div class="info-value">{{ case.rescued_female }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.rescued_adult %}
+                    <div class="info-item">
+                        <div class="info-label">Adult Rescued</div>
+                        <div class="info-value">{{ case.rescued_adult }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.rescued_child %}
+                    <div class="info-item">
+                        <div class="info-label">Child Rescued</div>
+                        <div class="info-value">{{ case.rescued_child }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Animals & Personnel -->
+                <div class="info-grid">
+                    {% if case.animals_rescued %}
+                    <div class="info-item">
+                        <div class="info-label">Animals Rescued</div>
+                        <div class="info-value">{{ case.animals_rescued }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.animals_lost %}
+                    <div class="info-item">
+                        <div class="info-label">Animals Lost</div>
+                        <div class="info-value">{{ case.animals_lost }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.fire_personnel_injuries %}
+                    <div class="info-item">
+                        <div class="info-label">Fire Personnel Injuries</div>
+                        <div class="info-value">{{ case.fire_personnel_injuries }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Medical Response -->
+            {% if case.hospital_doctor or case.ambulance_notified %}
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-truck-medical"></i>
+                    Medical Response
+                </div>
+                <div class="info-grid">
+                    {% if case.hospital_doctor %}
+                    <div class="info-item">
+                        <div class="info-label">Hospital/Doctor</div>
+                        <div class="info-value">{{ case.hospital_doctor }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.ambulance_notified %}
+                    <div class="info-item">
+                        <div class="info-label">Ambulance Notified</div>
+                        <div class="info-value">{{ case.ambulance_notified }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Response Details -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-fire-extinguisher"></i>
+                    Response Details
+                </div>
+                <div class="info-grid">
+                    {% if case.appliances_crews %}
+                    <div class="info-item">
+                        <div class="info-label">Appliances/Crews</div>
+                        <div class="info-value">{{ case.appliances_crews }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.officer_in_charge %}
+                    <div class="info-item">
+                        <div class="info-label">Officer in Charge</div>
+                        <div class="info-value">{{ case.officer_in_charge }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if case.equipment_used %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Equipment Used</div>
+                    <div class="info-value">{{ case.equipment_used|linebreaks }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Property & Damage -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-dollar-sign"></i>
+                    Property & Damage Assessment
+                </div>
+                <div class="info-grid">
+                    {% if case.property_saved %}
+                    <div class="info-item">
+                        <div class="info-label">Property Saved</div>
+                        <div class="info-value">{{ case.property_saved }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.property_lost %}
+                    <div class="info-item">
+                        <div class="info-label">Property Lost</div>
+                        <div class="info-value">{{ case.property_lost }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.approximate_loss %}
+                    <div class="info-item">
+                        <div class="info-label">Approximate Loss</div>
+                        <div class="info-value">{{ case.approximate_loss }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.building_damage %}
+                    <div class="info-item">
+                        <div class="info-label">Building Damage</div>
+                        <div class="info-value">{{ case.building_damage }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% if case.property_removed %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Property Removed</div>
+                    <div class="info-value">{{ case.property_removed|linebreaks }}</div>
+                </div>
+                {% endif %}
+                {% if case.items_destroyed %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Items Destroyed</div>
+                    <div class="info-value">{{ case.items_destroyed|linebreaks }}</div>
+                </div>
+                {% endif %}
+                {% if case.major_loss_cause %}
+                <div class="full-width-item" style="margin-top: 20px;">
+                    <div class="info-label">Major Loss Cause</div>
+                    <div class="info-value">{{ case.major_loss_cause|linebreaks }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            {% endif %}
+
+            <!-- Assistance Call Specific Fields -->
+            {% if model_type == 'assistance' %}
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-hands-helping"></i>
+                    Assistance Details
+                </div>
+                {% if case.assistance_details %}
+                <div class="full-width-item">
+                    <div class="info-value">{{ case.assistance_details|linebreaks }}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Hazards for Assistance Calls -->
+            <div class="section">
+                <div class="section-title">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Hazards & Conditions
+                </div>
+                <div class="info-grid">
+                    {% if case.electrical_chemicals %}
+                    <div class="info-item">
+                        <div class="info-label">Electrical/Chemicals</div>
+                        <div class="info-value">{{ case.electrical_chemicals }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.hazardous_materials %}
+                    <div class="info-item">
+                        <div class="info-label">Hazardous Materials</div>
+                        <div class="info-value">{{ case.hazardous_materials }}</div>
+                    </div>
+                    {% endif %}
+                    {% if case.weather_conditions %}
+                    <div class="info-item">
+                        <div class="info-label">Weather Conditions</div>
+                        <div class="info-value">{{ case.weather_conditions }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</body>
+</html>

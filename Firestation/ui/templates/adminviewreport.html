@@ -1,0 +1,685 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>View Reports - Chengannur Fire Rescue Services</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+    <style>
+        :root {
+            --clr-bg: #f7f8fc;
+            --clr-card: #fff;
+            --clr-primary: #1e2a35;
+            --clr-secondary: #59677a;
+            --clr-red: #ff3333;
+            --shadow: 0 4px 16px rgba(31, 37, 53, 0.09);
+            --shadow-hover: 0 8px 28px 2px rgba(60, 53, 102, 0.12);
+            --clr-blue: #2266ff;
+            --clr-green: #13b863;
+            --clr-amber: #f7a900;
+            --clr-card-shadow: 0 4px 20px 0 rgba(59, 90, 184, 0.08);
+            --card-transition: .22s cubic-bezier(.66, 1.53, .67, .93);
+        }
+
+        /* Header/Navbar */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--clr-card);
+            padding: 18px 38px 12px 38px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeInDown 1.1s cubic-bezier(.5, 2.1, .6, .97);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .header-logo img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #faadad1a;
+        }
+
+        .header-title {
+            font-size: 1.38rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--clr-secondary);
+            font-size: 1.09rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 7px 16px 7px 16px;
+            border-radius: 10px 10px 0 0;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            background: #fdecec;
+            color: var(--clr-red);
+            border-bottom: 2px solid var(--clr-red);
+        }
+
+        .nav-profile {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-end-start-radius: 13px;
+            padding: 9px 26px 9px 16px;
+            outline: none;
+            transition: box-shadow 0.18s, border 0.18s;
+        }
+
+        .nav-profile:hover,
+        .nav-profile:focus-within {
+            box-shadow: 0 4px 16px #f261615e;
+        }
+
+        .alert {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            animation: fadeInDown 0.5s ease;
+        }
+
+        .alert-success {
+            color: #256f00;
+            background-color: #d2ffd2;
+            box-shadow: 0 4px 14px #2d522f66;
+        }
+
+        .alert-error {
+            color: #8b0000;
+            background-color: #ffe0e0;
+            box-shadow: 0 4px 14px #8b000066;
+        }
+
+        .logout-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--clr-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            width: 250px;
+            height: 150px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .buttonBOX {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60%;
+            background-color: #f26161;
+            margin-top: 15px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .buttonBOX:hover {
+            background-color: #d94c4c;
+            box-shadow: 0 6px 14px rgba(242, 97, 97, 0.6);
+        }
+
+        .nav-profile:focus-within .logout-menu {
+            display: flex;
+        }
+
+        .logout-link {
+            color: white;
+            font-weight: 600;
+            padding: 10px 16px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .logout-link:hover {
+            opacity: 0.9;
+        }
+
+        .nav-profile i {
+            color: var(--clr-red);
+            font-size: 1.36rem;
+        }
+
+        .nav-profile-data {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-profile-name {
+            color: var(--clr-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .nav-profile-role {
+            font-size: 0.88rem;
+            color: var(--clr-red);
+            line-height: 1;
+        }
+
+        body {
+            background: var(--clr-bg);
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--clr-primary);
+        }
+
+        .container {
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Filter Section Styling */
+        .filter-section {
+            background: var(--clr-card);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .filter-form label {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--clr-primary);
+            font-size: 0.95rem;
+        }
+
+        .filter-form input {
+            padding: 10px 14px;
+            border: 2px solid #e0e7ff;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: border-color 0.3s;
+            min-width: 160px;
+        }
+
+        .filter-form input:focus {
+            outline: none;
+            border-color: var(--clr-blue);
+        }
+
+        .qa-card {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .qa-blue {
+            background: var(--clr-blue);
+            color: white;
+        }
+
+        .qa-blue:hover {
+            background: #1a52cc;
+            box-shadow: 0 4px 12px rgba(34, 102, 255, 0.3);
+        }
+
+        .qa-yellow {
+            background: var(--clr-amber);
+            color: white;
+        }
+
+        .qa-yellow:hover {
+            background: #d99000;
+            box-shadow: 0 4px 12px rgba(247, 169, 0, 0.3);
+        }
+
+        .qa-green {
+            background: var(--clr-green);
+            color: white;
+        }
+
+        .qa-green:hover {
+            background: #109954;
+            box-shadow: 0 4px 12px rgba(19, 184, 99, 0.3);
+        }
+
+        .qa-red {
+            background: var(--clr-red);
+            color: white;
+        }
+
+        .qa-red:hover {
+            background: #cc2929;
+            box-shadow: 0 4px 12px rgba(255, 51, 51, 0.3);
+        }
+
+        /* Reports Table Styling */
+        .recent-cases-section {
+            background: var(--clr-card);
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            animation: fadeInUp 1s ease;
+        }
+
+        .recent-cases-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recent-cases-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--clr-red);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        thead tr {
+            background: #ebeffa;
+            font-size: 1rem;
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 700;
+            color: var(--clr-primary);
+        }
+
+        th:first-child {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+
+        tbody tr {
+            background: #fff;
+            box-shadow: 0 1px 7px #bac9e04c;
+            transition: all 0.3s;
+        }
+
+        tbody tr:hover {
+            box-shadow: 0 4px 14px rgba(59, 90, 184, 0.15);
+            transform: translateY(-2px);
+        }
+
+        td {
+            padding: 16px;
+            color: var(--clr-secondary);
+        }
+
+        td:first-child {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        td:last-child {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .footer {
+            margin-top: 60px;
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-form label {
+                width: 100%;
+            }
+
+            .filter-form input {
+                width: 100%;
+            }
+
+            .qa-card {
+                width: 100%;
+                justify-content: center;
+            }
+
+            table {
+                font-size: 0.85rem;
+            }
+
+            th,
+            td {
+                padding: 10px 8px;
+            }
+
+            .actions-cell {
+                flex-direction: column;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+
+            .main-header,
+            .filter-section,
+            .footer,
+            .actions-cell {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .recent-cases-section {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER/NAV -->
+    <div class="main-header">
+        <div class="header-logo">
+            <img src="{% static 'ui/images/logo.webp' %}" alt="Station Logo">
+            <div>
+                <div class="header-title">Fireforce Station</div>
+                <div style="font-size:.98rem; color:#ef5350;">Emergency Response Portal</div>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="{% url 'admindashboard' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'adminreportcase' %}" class="nav-link">Report Case</a>
+            <a href="{% url 'adminanalytics' %}" class="nav-link">Analytics</a>
+            <a href="{% url 'adminviewreport' %}" class="nav-link active">Reports</a>
+            <a href="#" class="nav-link">Users and Admin</a>
+        </nav>
+        <div class="nav-profile" tabindex="0">
+            <i class="fa-solid fa-user"></i>
+            <div class="nav-profile-data">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <span class="nav-profile-role">Admin</span>
+            </div>
+            <div class="logout-menu">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <div class="buttonBOX">
+                    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <div class="container" style="margin-bottom: 60px;">
+        <!-- REPORTS FILTER AND ACTIONS -->
+        <section class="filter-section">
+            <form method="get" class="filter-form">
+                <label>
+                    Month
+                    <input type="month" name="month" value="{{ request.GET.month }}">
+                </label>
+                <label>
+                    Starting Date
+                    <input type="date" name="start_date" value="{{ request.GET.start_date }}">
+                </label>
+                <label>
+                    Ending Date
+                    <input type="date" name="end_date" value="{{ request.GET.end_date }}">
+                </label>
+                <button type="submit" class="qa-card qa-blue">
+                    <i class="fa fa-filter"></i> Filter
+                </button>
+                <a href="{% url 'adminviewreport' %}" class="qa-card qa-yellow">
+                    <i class="fa fa-refresh"></i> Show All
+                </a>
+                <a href="{% url 'download_reports' %}?month={{ request.GET.month }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}"
+                    class="qa-card qa-red">
+                    <i class="fa fa-file-download"></i> Download CSV
+                </a>
+                <button onclick="window.print()" type="button" class="qa-card qa-green">
+                    <i class="fa fa-print"></i> Print
+                </button>
+            </form>
+        </section>
+
+        <!-- REPORTS TABLE -->
+        <div class="recent-cases-section">
+            <div class="recent-cases-title">
+                All Submitted Reports
+                <span style="font-size: 1rem; font-weight: 500; color: var(--clr-secondary); margin-left: auto;">
+                    Total: {{ all_reports|length }}
+                </span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">Index</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>User</th>
+                            <th style="min-width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in all_reports %}
+                        <tr>
+                            <td><b>{{ forloop.counter }}</b></td>
+                            <td>
+                                <b>
+                                    {% if case.incident %}
+                                    {{ case.incident }}
+                                    {% elif case.incident_type %}
+                                    {{ case.incident_type }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </b>
+                            </td>
+                            <td>{{ case.form_date|date:"M d, Y" }}</td>
+                            <td>{{ case.exact_location|default:"-" }}</td>
+                            <td>{{ case.userName|default:"-" }}</td>
+                            <td class="actions-cell">
+                                <a href="{% url 'allcase_detail' case.model_type case.id %}" class="qa-card qa-green"
+                                    style="padding:6px 14px; font-size:0.9rem;">
+                                    <i class="fa fa-eye"></i> View
+                                </a>
+                                <a href="{% url 'edit_case' case.model_type case.id %}" class="qa-card qa-blue"
+                                    style="padding:6px 14px; font-size:0.9rem;">
+                                    <i class="fa fa-edit"></i> Edit
+                                </a>
+                                <a href="{% url 'delete_case' case.model_type case.id %}" class="qa-card qa-red"
+                                    style="padding:6px 14px; font-size:0.9rem;"
+                                    onclick="return confirm('Are you sure you want to delete this report? This action cannot be undone.');">
+                                    <i class="fa fa-trash"></i> Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align:center; color:#c84d4d; padding: 40px;">
+                                <i class="fa fa-folder-open"
+                                    style="font-size: 3rem; margin-bottom: 16px; display: block;"></i>
+                                <b>No reports found.</b>
+                                <p style="color: var(--clr-secondary); margin-top: 8px;">Try adjusting your filters or
+                                    add a new report.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Emergency Services</h3>
+                    <ul>
+                        <li><a href="tel:101">Fire Emergency: 101</a></li>
+                        <li><a href="tel:108">Medical Emergency: 108</a></li>
+                        <li><a href="tel:100">Police Emergency: 100</a></li>
+                        <li><a href="tel:1077">Disaster Management: 1077</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li><a href="{% url 'user_login' %}">Portal Access</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+                        <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+                        <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Service Areas</h3>
+                    <ul>
+                        <li>Chengannur Municipality</li>
+                        <li>Pandanad Panchayat</li>
+                        <li>Mulakkuzha Village</li>
+                        <li>Ennakkad Panchayat</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+                    <p>Created by students of College of Engineering Chengannur</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

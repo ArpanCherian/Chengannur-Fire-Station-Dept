@@ -1,0 +1,599 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Report Emergency Case - Chengannur Fire Rescue Services</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+    <style>
+        :root {
+            --clr-bg: #f7f8fc;
+            --clr-card: #fff;
+            --clr-primary: #1e2a35;
+            --clr-secondary: #59677a;
+            --clr-red: #ff3333;
+            --shadow: 0 4px 16px rgba(31, 37, 53, 0.09);
+            --shadow-hover: 0 8px 28px 2px rgba(60, 53, 102, 0.12);
+            --clr-blue: #2266ff;
+            --clr-green: #13b863;
+            --clr-amber: #f7a900;
+            --clr-card-shadow: 0 4px 20px 0 rgba(59, 90, 184, 0.08);
+            --card-transition: .22s cubic-bezier(.66, 1.53, .67, .93);
+        }
+
+        /* Header/Navbar */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--clr-card);
+            padding: 18px 38px 12px 38px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeInDown 1.1s cubic-bezier(.5, 2.1, .6, .97);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .header-logo img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #faadad1a;
+        }
+
+        .header-title {
+            font-size: 1.38rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--clr-secondary);
+            font-size: 1.09rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 7px 16px 7px 16px;
+            border-radius: 10px 10px 0 0;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            background: #fdecec;
+            color: var(--clr-red);
+            border-bottom: 2px solid var(--clr-red);
+        }
+
+        .nav-profile {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-end-start-radius: 13px;
+            /* slightly more visual roundness */
+            padding: 9px 26px 9px 16px;
+            /* more padding for boxiness */
+            outline: none;
+            /* subtle red shadow for depth */
+            /* soft red border */
+            transition: box-shadow 0.18s, border 0.18s;
+        }
+
+        /* Optional hover/focus effect for more dynamic feedback */
+        .nav-profile:hover,
+        .nav-profile:focus-within {
+            box-shadow: 0 4px 16px #f261615e;
+        }
+
+        .alert {
+            max-width: 360px;
+            margin: 20px auto;
+            padding: 12px 20px;
+            border-radius: 7px;
+            font-weight: 600;
+            text-align: center;
+            color: #256f00;
+            background-color: #d2ffd2;
+            box-shadow: 0 4px 14px #2d522f66;
+            animation: fadeInDown 1.1s ease;
+        }
+
+        .alert-success {
+            color: #256f00;
+            background-color: #d2ffd2;
+        }
+
+
+        .logout-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--clr-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            width: 250px;
+            height: 150px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .buttonBOX {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60%;
+            background-color: #f26161;
+            margin-top: 15px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .buttonBOX:hover {
+            background-color: #d94c4c;
+            /* Slightly darker red on hover */
+            box-shadow: 0 6px 14px rgba(242, 97, 97, 0.6);
+        }
+
+        .nav-profile:focus-within .logout-menu {
+            display: flex;
+        }
+
+        .logout-link {
+            color: var(--clr-red);
+            font-weight: 600;
+            padding: 10px 16px;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .logout-link:hover {
+            background: var(--clr-red-light);
+        }
+
+
+        .nav-profile i {
+            color: var(--clr-red);
+            font-size: 1.36rem;
+        }
+
+        .nav-profile-data {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-profile-name {
+            color: var(--clr-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .nav-profile-role {
+            font-size: 0.88rem;
+            color: var(--clr-red);
+            line-height: 1;
+        }
+
+        body {
+            background: var(--clr-bg);
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--clr-primary);
+        }
+
+        .container {
+            max-width: 1220px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            box-shadow: var(--shadow);
+        }
+
+        .report-title {
+            font-size: 2.4rem;
+            text-align: center;
+            font-weight: 900;
+            margin-bottom: 10px;
+            letter-spacing: .01em;
+            animation: fadeInDown .58s;
+        }
+
+        .report-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--clr-secondary);
+            margin-bottom: 23px;
+            animation: fadeInUp .5s;
+        }
+
+        .report-login {
+            display: block;
+            text-align: center;
+            margin: 12px auto 30px auto;
+            background: #eaf2fd;
+            color: #2251a3;
+            border-radius: 10px;
+            font-size: 1rem;
+            padding: 7px 20px;
+            width: max-content;
+            animation: fadeIn .18s .2s backwards;
+        }
+
+        .case-options {
+            display: flex;
+            gap: 36px;
+            justify-content: center;
+            flex-wrap: nowrap;
+            /* Disable wrapping to keep in one row */
+        }
+
+        .case-card {
+            background: var(--clr-card);
+            border-radius: 18px;
+            box-shadow: var(--clr-card-shadow);
+            padding: 36px 25px 26px 25px;
+            min-width: 250px;
+            max-width: 320px;
+            transition: transform var(--card-transition), box-shadow var(--card-transition), border var(--card-transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 12px;
+            border: 2.5px solid #ffffff00;
+            position: relative;
+        }
+
+        .case-card:hover,
+        .case-card:focus-within {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 6px 36px 0 rgba(255, 85, 55, .12), var(--clr-card-shadow);
+            border-color: #ffe5e5;
+            z-index: 2;
+        }
+
+        .case-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 14px;
+            margin-top: -16px;
+            box-shadow: 0 4px 18px 0 rgba(59, 0, 0, .08);
+            transition: box-shadow var(--card-transition), background var(--card-transition);
+            background: #f5f5f8;
+        }
+
+        .case-fire {
+            background: #ff333315;
+            color: var(--clr-red);
+        }
+
+        .case-water {
+            background: #2266ff15;
+            color: var(--clr-blue);
+        }
+
+        .case-health {
+            background: #008f6810;
+            color: var(--clr-green);
+        }
+
+        .case-other {
+            background: #fffad4;
+            color: var(--clr-amber);
+        }
+
+        .case-label {
+            font-size: 1.19rem;
+            font-weight: 900;
+            margin-bottom: 7px;
+            color: var(--clr-primary);
+            text-align: center;
+        }
+
+        .case-desc {
+            color: var(--clr-secondary);
+            font-size: .99rem;
+            text-align: center;
+            min-height: 45px;
+            margin-bottom: 18px;
+        }
+
+        .case-btn {
+            border: none;
+            border-radius: 8px;
+            font-size: 1.09rem;
+            font-weight: 700;
+            color: #fff;
+            padding: 12px 0;
+            width: 90%;
+            transition: background .16s;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px #eaeaea44;
+            font-family: 'Inter', Arial, sans-serif;
+            outline: none;
+        }
+
+        .fireformbutton {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 24px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .case-fire-btn {
+            background: var(--clr-red);
+        }
+
+        .case-water-btn {
+            background: var(--clr-blue);
+        }
+
+        .case-health-btn {
+            background: var(--clr-green);
+        }
+
+        .case-other-btn {
+            background: var(--clr-amber);
+        }
+
+        .case-btn:hover,
+        .case-btn:focus {
+            filter: brightness(1.11);
+            box-shadow: 0 4px 18px #c0c0de29;
+        }
+
+        @media (max-width: 850px) {
+            .case-options {
+                flex-wrap: nowrap !important;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .case-card {
+                min-width: 260px;
+                /* Keep consistent width */
+                max-width: 260px;
+                flex: 0 0 auto;
+                /* Fix width */
+            }
+        }
+
+        @media (max-width:650px) {
+            .case-options {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .report-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HEADER/NAV -->
+    <div class="main-header">
+        <div class="header-logo">
+            <img src="{% static 'ui/images/logo.webp' %}" alt="Station Logo">
+            <div>
+                <div class="header-title">Fireforce Station</div>
+                <div style="font-size:.98rem; color:#ef5350;">Emergency Response Portal</div>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="{% url 'admindashboard' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'adminreportcase' %}" class="nav-link active">Report Case</a>
+            <a href="{% url 'adminanalytics' %}" class="nav-link">Analytics</a>
+            <a href="{% url 'adminviewreport' %}" class="nav-link">Reports</a>
+            <a href="#" class="nav-link">Users and Admin</a>
+        </nav>
+        <div class="nav-profile" tabindex="0">
+            <i class="fa-solid fa-user"></i>
+            <div class="nav-profile-data">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <span class="nav-profile-role">Admin</span>
+            </div>
+            <div class="logout-menu">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <div class="buttonBOX">
+                    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- REPORT CASE CONTENT -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}"
+        style="max-width:360px; margin:20px auto; background:#d2ffd2; color:#256f00; padding:12px 20px; border-radius:7px; text-align:center; font-weight:600; box-shadow: 0 4px 14px #2d522f66; animation: fadeInDown 1.1s ease;">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <div class="container">
+        <div class="report-title">Report Emergency Case</div>
+        <div class="report-subtitle">
+            Select the type of emergency you need to report. Fill out the appropriate form with accurate details to
+            ensure proper response coordination.
+        </div>
+        <div class="report-login">
+            Logged in as: <b>{{ request.session.username|default:"Station Admin" }}</b> (Admin)
+        </div>
+        <div class="case-options">
+            <div class="case-card" tabindex="0">
+                <div class="case-icon case-fire">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="case-label">Fire Incident</div>
+                <div class="case-desc">
+                    Report fires, explosions, and related emergencies.
+                </div>
+                <div class="fireformbutton">
+                    <button class="case-btn case-fire-btn" onclick="window.location.href='/adminfireform/'">
+                        Select &amp; Report
+                    </button>
+                </div>
+            </div>
+            <div class="case-card" tabindex="0">
+                <div class="case-icon case-water">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+                <div class="case-label">Water Rescue</div>
+                <div class="case-desc">
+                    Report water rescues, drowning incidents, and aquatic emergencies.
+                </div>
+                <button class="case-btn case-water-btn" onclick="window.location.href='/adminwaterform/'">
+                    Select &amp; Report
+                </button>
+            </div>
+            <div class="case-card" tabindex="0">
+                <div class="case-icon case-other">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="case-label">General Incident</div>
+                <div class="case-desc">
+                    Report other incidents like road hazards, fallen trees, etc.
+                </div>
+                <button class="case-btn case-other-btn" onclick="window.location.href='/admingeneralincidentform/'">
+                    Select &amp; Report
+                </button>
+            </div>
+            <div class="case-card" tabindex="0">
+                <div class="case-icon case-health">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <div class="case-label">Assistance Call</div>
+                <div class="case-desc">
+                    Report medical emergencies requiring fire department assistance.
+                </div>
+                <button class="case-btn case-health-btn" onclick="window.location.href='/adminassistcalls/'">
+                    Select &amp; Report
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Emergency Services</h3>
+                    <ul>
+                        <li><a href="tel:101">Fire Emergency: 101</a></li>
+                        <li><a href="tel:108">Medical Emergency: 108</a></li>
+                        <li><a href="tel:100">Police Emergency: 100</a></li>
+                        <li><a href="tel:1077">Disaster Management: 1077</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}">About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li><a href="{% url 'user_login' %}">Portal Access</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+                        <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+                        <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Service Areas</h3>
+                    <ul>
+                        <li>Chengannur Municipality</li>
+                        <li>Pandanad Panchayat</li>
+                        <li>Mulakkuzha Village</li>
+                        <li>Ennakkad Panchayat</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+                    <p>Created by students of College of Engineering Chengannur</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

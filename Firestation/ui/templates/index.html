@@ -1,0 +1,267 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chengannur Fire Rescue Services</title>
+
+    <!-- FontAwesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Local CSS files using static -->
+    <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" id="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="{% url 'index' %}" class="logo" style="display: flex; align-items: center;">
+                    <img src="{% static 'ui/images/logo.webp' %}" alt="Chengannur Fire Rescue Logo" style="height: 40px; vertical-align: middle; margin-right: 8px;" />
+                    <span style="font-weight: 700; color: #ef4444; font-size: 1.3rem;">Chengannur Fire Rescue</span>
+                </a>
+
+                <div class="nav-menu" id="nav-menu">
+                    <ul class="nav-list">
+                        <li><a href="{% url 'index' %}" class="nav-link active">Home</a></li>
+                        <li><a href="{% url 'about' %}" class="nav-link">About</a></li>
+                        <li><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
+                    </ul>
+                    <div class="nav-auth" id="nav-auth">
+                        <a href="{% url 'user_login' %}" class="btn btn-primary">Login</a>
+                    </div>
+                </div>
+
+                <div class="nav-toggle" id="nav-toggle">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content animate-fade-in">
+                <h1 class="animate-slide-in-left">
+                    Chengannur Fire Rescue Services
+                </h1>
+                <p class="animate-slide-in-right">
+                    Protecting our community with professional emergency response,
+                    fire prevention, and rescue services.
+                </p>
+                <div class="hero-buttons stagger-animation">
+                    <a href="tel:101" class="btn btn-primary btn-lg">
+                        <i class="fas fa-phone"></i>
+                        Emergency: 101
+                    </a>
+                    <a href="{% url 'user_login' %}" class="btn btn-outline btn-lg">
+                        Access Portal
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Our Services</h2>
+                    <p>Comprehensive emergency services designed to protect and serve our community</p>
+                </div>
+
+                <div class="services-grid stagger-animation">
+                    <div class="service-card fire hover-lift">
+                        <div class="service-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <h3>Fire Suppression</h3>
+                        <p>Rapid response to all types of fire emergencies with advanced equipment and trained
+                            personnel.</p>
+                    </div>
+
+                    <div class="service-card rescue hover-lift">
+                        <div class="service-icon">
+                            <i class="fas fa-hand-holding-heart"></i>
+                        </div>
+                        <h3>Emergency Rescue</h3>
+                        <p>Specialized rescue operations including vehicle accidents, building collapses, and water
+                            rescues.</p>
+                    </div>
+
+                    <div class="service-card community hover-lift">
+                        <div class="service-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3>Community Safety</h3>
+                        <p>Fire prevention education, safety inspections, and community preparedness programs.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Our Impact</h2>
+                    <p>Serving Chengannur with excellence and dedication</p>
+                </div>
+
+                <div class="stats-grid" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Lives Saved</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-number">98.5%</div>
+                        <div class="stat-label">Response Rate</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon yellow">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Years Service</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mission Section -->
+        <section class="mission-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Our Mission</h2>
+                    <p>Committed to protecting lives, property, and the environment through professional emergency
+                        services</p>
+                </div>
+
+                <div class="mission-grid stagger-animation">
+                    <div class="mission-card hover-lift">
+                        <div class="mission-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Professional Emergency Response</h3>
+                        <p>Delivering expert emergency services with state-of-the-art equipment</p>
+                    </div>
+
+                    <div class="mission-card hover-lift">
+                        <div class="mission-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h3>Community Safety</h3>
+                        <p>Protecting lives and property through prevention and education</p>
+                    </div>
+
+                    <div class="mission-card hover-lift">
+                        <div class="mission-icon">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        <h3>Fire Prevention</h3>
+                        <p>Proactive measures to prevent fires and minimize risks</p>
+                    </div>
+
+                    <div class="mission-card hover-lift">
+                        <div class="mission-icon">
+                            <i class="fas fa-ambulance"></i>
+                        </div>
+                        <h3>24/7 Coverage</h3>
+                        <p>Round-the-clock emergency response and support services</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to Get Started?</h2>
+                <p>Access our portal for reporting, analytics, and emergency management</p>
+                <div class="cta-buttons">
+                    <a href="{% url 'user_login' %}" class="btn btn-primary btn-lg">Login to Portal</a>
+                    <a href="{% url 'about' %}"  class="btn btn-outline btn-lg">Learn More</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Emergency Services</h3>
+                    <ul>
+                        <li><a href="tel:101">Fire Emergency: 101</a></li>
+                        <li><a href="tel:108">Medical Emergency: 108</a></li>
+                        <li><a href="tel:100">Police Emergency: 100</a></li>
+                        <li><a href="tel:1077">Disaster Management: 1077</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{% url 'about' %}" >About Us</a></li>
+                        <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                        <li><a href="{% url 'user_login' %}">Portal Access</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul>
+                        <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+                        <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+                        <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Service Areas</h3>
+                    <ul>
+                        <li>Chengannur Municipality</li>
+                        <li>Pandanad Panchayat</li>
+                        <li>Mulakkuzha Village</li>
+                        <li>Ennakkad Panchayat</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+                    <p>Created by students of College of Engineering Chengannur</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS files -->
+    <script src="{% static 'ui/js/components.js' %}"></script>
+    <script src="{% static 'ui/js/main.js' %}"></script>
+</body>
+</html>

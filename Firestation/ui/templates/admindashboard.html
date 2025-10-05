@@ -1,0 +1,802 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - Chengannur Fire Rescue Services</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+  <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+  <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+  <style>
+    :root {
+      --clr-bg: #f7f8fc;
+      --clr-card: #fff;
+      --clr-primary: #082032;
+      --clr-secondary: #334155;
+      --clr-glass: rgba(255, 255, 255, 0.8);
+      --shadow: 0 4px 16px rgba(31, 37, 53, 0.09);
+      --shadow-hover: 0 8px 28px 2px rgba(60, 53, 102, 0.12);
+      --clr-active: #fdecec;
+      --clr-green: #43bc65;
+      --clr-yellow: #ffe09e;
+      --clr-red: #f26161;
+      --clr-blue: #bedcff;
+      --transition: 0.25s cubic-bezier(.4, 2.14, .62, .93);
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      background: var(--clr-bg);
+      font-family: 'Inter', Arial, sans-serif;
+      color: var(--clr-primary);
+    }
+
+    /* Header/Navbar */
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--clr-card);
+      padding: 18px 38px 12px 38px;
+      box-shadow: var(--shadow);
+      margin-bottom: 30px;
+      animation: fadeInDown 1.1s cubic-bezier(.5, 2.1, .6, .97);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .header-logo img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px #faadad1a;
+    }
+
+    .header-title {
+      font-size: 1.38rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+    }
+
+    .nav-menu {
+      display: flex;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--clr-secondary);
+      font-size: 1.09rem;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 7px 16px 7px 16px;
+      border-radius: 10px 10px 0 0;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .nav-link.active,
+    .nav-link:hover {
+      background: #fdecec;
+      color: var(--clr-red);
+      border-bottom: 2px solid var(--clr-red);
+    }
+
+    .nav-profile {
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 20px 6px 16px;
+      outline: none;
+      /* Remove browser outline but keep accessible */
+    }
+
+    .logout-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: var(--clr-card);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      width: 250px;
+      height: 150px;
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding-top: 8px;
+    }
+
+    .buttonBOX {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 60%;
+      background-color: #f26161;
+      margin-top: 15px;
+      border-radius: 30px;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .buttonBOX:hover {
+      background-color: #d94c4c;
+      /* Slightly darker red on hover */
+      box-shadow: 0 6px 14px rgba(242, 97, 97, 0.6);
+    }
+
+    .nav-profile:focus-within .logout-menu {
+      display: flex;
+    }
+
+    .logout-link {
+      color: var(--clr-red);
+      font-weight: 600;
+      padding: 10px 16px;
+      color: white;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .logout-link:hover {
+      background: var(--clr-red-light);
+    }
+
+
+    .nav-profile {
+      position: relative;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-end-start-radius: 13px;
+      /* slightly more visual roundness */
+      padding: 9px 26px 9px 16px;
+      /* more padding for boxiness */
+      outline: none;
+      /* subtle red shadow for depth */
+      /* soft red border */
+      transition: box-shadow 0.18s, border 0.18s;
+    }
+
+    /* Optional hover/focus effect for more dynamic feedback */
+    .nav-profile:hover,
+    .nav-profile:focus-within {
+      box-shadow: 0 4px 16px #f261615e;
+    }
+
+    .nav-profile-data {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .nav-profile-name {
+      color: var(--clr-primary);
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .nav-profile-role {
+      font-size: 0.88rem;
+      color: var(--clr-red);
+      line-height: 1;
+    }
+
+    .nav-profile i {
+      color: var(--clr-red);
+      font-size: 1.36rem;
+    }
+
+    /* Dashboard Container */
+    .containerbox {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 2vw;
+    }
+
+    /* Hero/welcome */
+    .welcome-hero {
+      text-align: center;
+      margin-bottom: 23px;
+      animation: fadeInUp 1.1s cubic-bezier(.5, 2.1, .6, .97);
+    }
+
+    .welcome-hero h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: .02em;
+      margin-bottom: 10px;
+      color: var(--clr-primary);
+      text-shadow: 0 2px 8px #e8e8e880;
+      animation: slideInScale 1.1s;
+    }
+
+    .welcome-hero p {
+      font-size: 1.08rem;
+      color: var(--clr-secondary);
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      margin-bottom: 35px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      min-width: 200px;
+      flex: 1 1 200px;
+      background: var(--clr-card);
+      border-radius: 16px;
+      padding: 30px 0 24px 0;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px) scale(1.023);
+      z-index: 2;
+    }
+
+    .stat-label {
+      font-size: 1.07rem;
+      color: var(--clr-primary);
+      margin-bottom: 9px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--clr-primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-icon {
+      position: absolute;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .stat-icon.stat-blue {
+      color: #2979ff;
+    }
+
+    .stat-icon.stat-yellow {
+      color: #ffb400;
+    }
+
+    .stat-icon.stat-red {
+      color: #d70032;
+    }
+
+    .stat-icon.stat-green {
+      color: #27ae60;
+    }
+
+    /* Quick Actions */
+    .quickactions-section {
+      background: var(--clr-card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 26px 20px 20px 20px;
+      margin: 0 0 32px 0;
+      animation: fadeInUp .9s .15s backwards;
+    }
+
+    .quick-actions-title {
+      text-align: center;
+      font-size: 1.32rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      color: var(--clr-primary);
+      letter-spacing: 0.009em;
+    }
+
+    .quick-actions-row {
+      display: flex;
+      gap: 22px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .qa-card {
+      min-width: 260px;
+      max-width: 340px;
+      flex: 1 1 260px;
+      background: var(--clr-glass);
+      border-radius: 13px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 23px 22px;
+      margin-bottom: 12px;
+      box-shadow: 0 3px 12px #c0c0de1d;
+      border: 2px solid #fff6;
+      cursor: pointer;
+      backdrop-filter: blur(2.5px);
+      transform: translateY(0);
+      transition: box-shadow var(--transition), transform var(--transition), background var(--transition);
+      will-change: transform;
+    }
+
+    .qa-card:hover {
+      background: #f6f8fd;
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-4px) scale(1.017);
+    }
+
+    .qa-icon-box {
+      border-radius: 9px;
+      min-width: 50px;
+      min-height: 50px;
+      text-align: center;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      background: #faf8f6;
+      transition: background .2s;
+    }
+
+    .qa-card.qa-red .qa-icon-box {
+      background: #fdecec;
+    }
+
+    .qa-card.qa-blue .qa-icon-box {
+      background: #eef6ff;
+    }
+
+    .qa-card.qa-yellow .qa-icon-box {
+      background: #fff9ee;
+    }
+
+    .qa-icon {
+      font-size: 1.6rem;
+      color: #d70032;
+      transition: color var(--transition);
+    }
+
+    .qa-card.qa-blue .qa-icon {
+      color: #2979ff;
+    }
+
+    .qa-card.qa-yellow .qa-icon {
+      color: #b77b04;
+    }
+
+    .qa-text-main {
+      font-size: 1.09rem;
+      font-weight: 700;
+      color: var(--clr-primary);
+      margin-bottom: 2px;
+    }
+
+    .qa-desc {
+      font-size: 0.98rem;
+      color: #555a66;
+      opacity: 0.84;
+    }
+
+    /* Recent Cases Placeholder */
+    .recent-cases-section {
+      background: var(--clr-card);
+      margin: 0 auto;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 30px 18px 38px 18px;
+      margin-bottom: 38px;
+      animation: fadeIn .9s .25s backwards;
+    }
+
+    .recent-cases-title {
+      font-size: 1.36rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+      color: #10182b;
+    }
+
+    .no-cases-box {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .no-cases-icon {
+      background: #eef6ff;
+      color: #2979ff;
+      font-size: 2.3rem;
+      width: 62px;
+      height: 62px;
+      line-height: 62px;
+      border-radius: 50%;
+      margin: 0 auto 11px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px #e6edff91;
+      animation: pulse 1.7s infinite alternate;
+    }
+
+    .no-cases-title {
+      font-size: 1.09rem;
+      font-weight: 600;
+      color: var(--clr-secondary);
+    }
+
+    .no-cases-desc {
+      color: #888d9f;
+      font-size: 1rem;
+      margin-top: 4px;
+    }
+
+    .cases-list {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .case-card {
+      background: --clr-red;
+      border-radius: 14px;
+      padding: 28px 36px;
+      box-shadow: 0 7px 28px #a5b5db2e;
+      border: 1.5px solid --clr-red;
+      font-size: 1.07rem;
+      color: --clr-red;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .case-card:hover,
+    .case-card:focus {
+      box-shadow: 0 11px 42px #879adb77;
+      background: --clr-red;
+      color: --clr-red;
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .case-card b {
+      font-weight: 900;
+      color: --clr-red;
+      display: block;
+      margin-bottom: 9px;
+      font-size: 1.12rem;
+    }
+
+    .case-card-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: transform 0.2s;
+    }
+
+    .case-card-link:hover {
+      transform: translateY(-2px);
+    }
+
+    .case-card i.fa-chevron-right {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+    }
+
+    .case-card div {
+      margin-bottom: 6px;
+      line-height: 1.45;
+    }
+
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width:1050px) {
+      .footer-row {
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .footer-col {
+        max-width: unset;
+      }
+    }
+
+    @media (max-width:768px) {
+
+      .stats-row,
+      .quick-actions-row {
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .main-header {
+        flex-direction: column;
+        padding: 18px 2vw;
+      }
+
+      .nav-menu {
+        margin: 10px 0;
+      }
+    }
+
+    @media (max-width:600px) {
+      .footer-main {
+        padding: 32px 4vw 22px 4vw;
+      }
+
+      .dashboard-container {
+        padding: 0 0vw;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideInScale {
+      from {
+        transform: scale(.92);
+        opacity: .2;
+      }
+
+      to {
+        transform: none;
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 #dbeafe;
+      }
+
+      100% {
+        box-shadow: 0 0 10px 8px #fff;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-container">
+    <!-- HEADER/NAV -->
+    <div class="main-header">
+      <div class="header-logo">
+        <img src="{% static 'ui/images/logo.webp' %}" alt="Station Logo">
+        <div>
+          <div class="header-title">Fireforce Station</div>
+          <div style="font-size:.98rem; color:#ef5350;">Emergency Response Portal</div>
+        </div>
+      </div>
+      <nav class="nav-menu">
+        <a href="{% url 'admindashboard' %}" class="nav-link active">Dashboard</a>
+        <a href="{% url 'adminreportcase' %}" class="nav-link">Report Case</a>
+        <a href="{% url 'adminanalytics' %}" class="nav-link">Analytics</a>
+        <a href="{% url 'adminviewreport' %}" class="nav-link">Reports</a>
+        <a href="#" class="nav-link">Users and Admin</a>
+      </nav>
+      <div class="nav-profile" tabindex="0">
+        <i class="fa-solid fa-user"></i>
+        <div class="nav-profile-data">
+          <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+          <span class="nav-profile-role">Admin</span>
+        </div>
+        <div class="logout-menu">
+          <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+          <div class="buttonBOX">
+            <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ALERTS -->
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}"
+      style="max-width:370px;margin:18px auto;text-align:center;border-radius:7px;background:#efffff;color:#1e465b;font-weight:500;padding:12px 0;box-shadow:0 1px 6px #b7ebff77; animation:fadeInDown .9s;">
+      {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    <!-- DASHBOARD CONTENT -->
+    <div class="containerbox">
+      <!-- HERO -->
+      <div class="welcome-hero">
+        <h1>Welcome back, {{ request.session.username|default:"Station Admin" }}</h1>
+        <p>Your emergency reporting dashboard - Track your submitted cases and report new incidents</p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total Reports</div>
+          <div class="stat-num">{{ total_reports|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Fire Cases</div>
+          <div class="stat-num">{{ fire_cases|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Water Cases</div>
+          <div class="stat-num">{{ water_cases|default:0 }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Other Cases</div>
+          <div class="stat-num">{{ other_cases|default:0 }}</div>
+        </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="quickactions-section">
+        <div class="quick-actions-title">Quick Actions</div>
+        <div class="quick-actions-row">
+          <div class="qa-card qa-red">
+            <span class="qa-icon-box"><i class="fa-solid fa-plus qa-icon"></i></span>
+            <div>
+              <div class="qa-text-main">Report New Case</div>
+              <div class="qa-desc">Submit a new emergency report</div>
+            </div>
+          </div>
+          <div class="qa-card qa-yellow">
+            <span class="qa-icon-box"><i class="fa-solid fa-triangle-exclamation qa-icon"></i></span>
+            <div>
+              <div class="qa-text-main">Emergency Call</div>
+              <div class="qa-desc">Call 911 for immediate help</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT CASES -->
+      <div class="recent-cases-section">
+        <div class="recent-cases-title">Your Recent Cases</div>
+        {% if recent_cases %}
+        <div class="cases-list">
+          {% for case in recent_cases %}
+          <a href="{% url 'admincase_detail' model_type=case.model_type case_id=case.id %}" class="case-card-link">
+            <div class="case-card">
+              <div><strong>{{ case.incident|default:"Incident" }}</strong> - {{ case.form_date }}</div>
+              <div>Location: {{ case.exact_location|default:"N/A" }}</div>
+              <i class="fa-solid fa-chevron-right"></i>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-cases-box">
+          <div class="no-cases-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="no-cases-title">No Cases Yet</div>
+          <div class="no-cases-desc">
+            You haven't reported any cases yet. Click "Report New Case" to submit your first emergency report.
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Emergency Services</h3>
+            <ul>
+              <li><a href="tel:101">Fire Emergency: 101</a></li>
+              <li><a href="tel:108">Medical Emergency: 108</a></li>
+              <li><a href="tel:100">Police Emergency: 100</a></li>
+              <li><a href="tel:1077">Disaster Management: 1077</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="{% url 'about' %}">About Us</a></li>
+              <li><a href="{% url 'contact' %}">Contact Us</a></li>
+              <li><a href="{% url 'user_login' %}">Portal Access</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Contact Information</h3>
+            <ul>
+              <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+              <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+              <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+              <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Service Areas</h3>
+            <ul>
+              <li>Chengannur Municipality</li>
+              <li>Pandanad Panchayat</li>
+              <li>Mulakkuzha Village</li>
+              <li>Ennakkad Panchayat</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+            <p>Created by students of College of Engineering Chengannur</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>

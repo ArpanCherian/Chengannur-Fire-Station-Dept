@@ -1,0 +1,386 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Assistance Call Report - Chengannur Rescue Services</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #f7f8fc;
+            font-family: 'Inter', Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #17202a;
+        }
+
+        .container {
+            max-width: 800px;
+            background: #fff;
+            margin: 36px auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 32px #b9bac11a;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        .header {
+            background: linear-gradient(90deg, #ff6b6b 0, #ffa502 100%);
+            color: #fff;
+            padding: 28px 38px 20px 38px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            font-weight: 600;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            font-size: 1rem;
+            text-decoration: none;
+            gap: 8px;
+            transition: all 0.16s;
+            box-shadow: 0 1.5px 7px #fff3;
+        }
+
+        .back-btn:hover {
+            background: #ffc048;
+            color: #17202a;
+            border-color: #fff1;
+            transform: translateY(-2px);
+        }
+
+        .form-container {
+            padding: 36px 32px 32px 32px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #e84118;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            margin-bottom: 16px;
+            letter-spacing: .01em;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px 32px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form-group label {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2b3d52;
+            letter-spacing: .008em;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"],
+        .form-group input[type="time"] {
+            font-size: 1rem;
+            padding: 11px 12px;
+            background: #f6fbff;
+            border: 2px solid #ebf1fa;
+            border-radius: 8px;
+            width: 100%;
+            color: #213241;
+            transition: border 0.17s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            border-color: #1486fc;
+            outline: none;
+        }
+
+        .form-group textarea {
+            font-size: 1rem;
+            padding: 11px 12px;
+            background: #f6fbff;
+            border: 2px solid #ebf1fa;
+            border-radius: 8px;
+            width: 100%;
+            color: #213241;
+            min-height: 65px;
+            resize: vertical;
+            transition: border 0.18s;
+            font-family: inherit;
+        }
+
+        .form-group textarea:focus {
+            border-color: #ff6b6b;
+            outline: none;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 14px;
+            margin-top: 28px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 8px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #ff6b6b, #ffa502 90%);
+            color: #fff;
+            box-shadow: 0 3px 16px #ffb52914;
+        }
+
+        .btn-primary:hover {
+            background: #ffbe76;
+            color: #21334a;
+        }
+
+        .btn-secondary {
+            background: #f2f5fd;
+            color: #af3d3d;
+            text-decoration: none;
+            border: 2px solid #ffe7d2;
+        }
+
+        .btn-secondary:hover {
+            background: #f5ebe0;
+            color: #e84118;
+        }
+
+        select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f6fbff;
+  font-size: 16px;
+  transition: border-color 0.2s;
+}
+select:focus {
+  border-color: #007bff;
+  outline: none;
+  background-color: #fff;
+}
+
+        @media (max-width: 700px) {
+            .form-container {
+                padding: 13px 6vw 20px 6vw;
+            }
+
+            .header {
+                padding: 21px 10px 9px 10px;
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fa-solid fa-edit"></i>
+                Edit Assistance Call Report
+            </h1>
+            <a href="{% url 'adminviewreport' %}" class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i> Back to Reports
+            </a>
+        </div>
+
+        <div class="form-container">
+            <form method="POST">
+                {% csrf_token %}
+
+                <!-- Basic Information -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Basic Information
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" name="userName" value="{{ case.userName }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Report Date</label>
+                            <input type="date" name="form_date" value="{{ case.form_date|date:'Y-m-d' }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Incident Type</label>
+                            <input type="text" name="incident_type" value="{{ case.incident_type }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Call Number</label>
+                            <input type="text" name="call_number" value="{{ case.call_number }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Call Timeline -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-clock"></i>
+                        Call Timeline
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Call Received</label>
+                            <input type="time" name="call_received" value="{{ case.call_received|time:'H:i'}}">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Left Station</label>
+                            <input type="time" name="time_left_station" value="{{case.time_left_station|time:'H:i' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Reached Scene</label>
+                            <input type="time" name="time_reached_scene"
+                                value="{{case.time_reached_scene|time:'H:i' }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Returned</label>
+                            <input type="time" name="time_returned" value="{{case.time_returned|time:'H:i' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assistance Details -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-handshake-angle"></i>
+                        Assistance Details
+                    </div>
+                    <div class="form-group full-width">
+                        <textarea name="assistance_details"
+                            placeholder="Enter details">{{ case.assistance_details }}</textarea>
+                    </div>
+                </div>
+
+                <!-- Hazards & Conditions -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Hazards & Conditions
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Electrical/Chemicals</label>
+                            <input type="text" name="electrical_chemicals" value="{{ case.electrical_chemicals }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Hazardous Materials</label>
+                            <input type="text" name="hazardous_materials" value="{{ case.hazardous_materials }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Weather Conditions</label>
+                            <select name="weather_conditions">
+                                <option value="clear" {% if case.weather_conditions == 'clear' %}selected{% endif %}>Clear</option>
+                                <option value="rain" {% if case.weather_conditions == 'rain' %}selected{% endif %}>Rain</option>
+                                <option value="windy" {% if case.weather_conditions == 'windy' %}selected{% endif %}>Windy</option>
+                                <option value="other" {% if case.weather_conditions == 'other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location & Contact -->
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Location & Contact Details
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Exact Location</label>
+                            <input type="text" name="exact_location" value="{{ case.exact_location }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Caller Contact</label>
+                            <input type="text" name="caller_contact" value="{{ case.caller_contact }}">
+                        </div>
+                        <div class="form-group">
+                            <label>Source of Call</label>
+                              <select name="source_of_call">
+                        <option value="telephone" {% if case.source_of_call == 'telephone' %}selected{% endif %}>Telephone</option>
+                        <option value="sms" {% if case.source_of_call == 'sms' %}selected{% endif %}>SMS</option>
+                        <option value="in_person" {% if case.source_of_call == 'in_person' %}selected{% endif %}>In Person</option>
+                         <option value="other" {% if case.source_of_call == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="button-group">
+                    <a href="{% url 'adminviewreport' %}" class="btn btn-secondary">
+                        <i class="fa-solid fa-xmark"></i> Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-save"></i> Save Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

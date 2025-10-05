@@ -1,0 +1,556 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Us - Chengannur Fire Rescue Services</title>
+  <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+  <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+  <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --fire-red: #ef4444;
+      --fire-red-dark: #b91c1c;
+      --card-radius: 1.35rem;
+      --card-shadow: 0 8px 32px rgba(239, 68, 68, 0.08);
+    }
+    body {
+      background: #fafafa;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      color: #1e293b;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+    }
+    header .logo img {
+      height: 38px;
+      width: auto;
+      vertical-align: middle;
+      transition: transform 0.25s;
+    }
+    header .logo img:hover {
+      transform: rotate(-8deg) scale(1.1);
+    }
+    .header .logo span {
+      color: var(--fire-red);
+    }
+
+    main {
+      padding-top: 92px;
+      min-height: calc(100vh - 92px);
+    }
+    .contact-top {
+      text-align: center;
+      margin-bottom: 2.6rem;
+      margin-top: 0.8rem;
+      animation: fadeIn 0.8s;
+    }
+    .contact-top h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: var(--fire-red);
+      margin: 0 0 0.31em 0;
+      letter-spacing: -2px;
+      line-height: 1.08;
+    }
+    .contact-top p {
+      color: #555;
+      font-size: 1.14rem;
+      margin-bottom: 0.4em;
+      font-weight: 500;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr 1fr;
+      gap: 2.2rem;
+      max-width: 1200px;
+      margin: 0 auto 3.3rem auto;
+      padding: 0 1.2rem;
+      align-items: stretch;
+    }
+    /* Responsive */
+    @media (max-width: 1150px) {
+      .contact-grid { gap: 1.2rem;}
+    }
+    @media (max-width: 980px) {
+      .contact-grid {
+        grid-template-columns: 1.1fr 1.5fr;
+        grid-auto-rows: 1fr;
+        gap: 1.3rem;
+      }
+      .contact-card,
+      .contact-form-card,
+      .contact-sidebar-card {
+        min-width: 0;
+      }
+      .contact-card {
+        margin-bottom: 1rem;
+      }
+    }
+    @media (max-width: 760px) {
+      .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 1.1rem;
+      }
+      .contact-card,
+      .contact-form-card,
+      .contact-sidebar-card {
+        margin-bottom: 0.85rem;
+        min-width: 0;
+      }
+    }
+    .contact-card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.3em 1.15em 2.2em 1.15em;
+      margin-bottom: 1rem;
+      animation: fadeInUp 0.9s;
+      transition: box-shadow 0.25s, transform 0.24s;
+    }
+    .contact-card .icon {
+      width: 82px;
+      height: 82px;
+      border-radius: 50%;
+      background: var(--fire-red);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2.2rem;
+      color: #fff;
+      box-shadow: 0 8px 48px #ef444466;
+      margin-bottom: 1.2rem;
+      animation: pulse 2s infinite;
+    }
+    .contact-card h2 {
+      color: var(--fire-red-dark);
+      font-weight: 700;
+      margin: 0.1em 0 0.18em 0;
+      font-size: 1.37rem;
+    }
+    .contact-card .number {
+      font-size: 2.2rem;
+      color: var(--fire-red);
+      font-weight: 800;
+      margin: 0.06em 0 0.23em 0;
+      letter-spacing: -1px;
+    }
+    .contact-card p {
+      color: #444;
+      font-size: 1.08rem;
+      margin-bottom: 0;
+      margin-top: 0.3rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .contact-form-card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 2.4em 2em;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: stretch;
+      animation: fadeInUp 1s;
+      min-width: 0;
+    }
+    .contact-form-card h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #23272b;
+      margin-bottom: 1.05em;
+      margin-top: .2em;
+      letter-spacing: -.5px;
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 1.05em;
+      opacity: 0;
+      animation: fadeInUpForm 1.27s forwards;
+    }
+    .form-group:nth-child(1) { animation-delay: 0.12s; }
+    .form-group:nth-child(2) { animation-delay: 0.21s; }
+    .form-group:nth-child(3) { animation-delay: 0.29s; }
+    .form-group:nth-child(4) { animation-delay: 0.37s; }
+    .form-group:nth-child(5) { animation-delay: 0.43s; }
+    .contact-form-card label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: .44em;
+      color: #b91c1c;
+      font-size: 1rem;
+      letter-spacing: 0.02em;
+    }
+    .contact-form-card input,
+    .contact-form-card select,
+    .contact-form-card textarea {
+      width: 100%;
+      font-size: 1.05rem;
+      padding: .78em 1em;
+      border-radius: 9px;
+      border: 1.7px solid #dcdbde;
+      background: #faf9fa;
+      font-family: inherit;
+      transition: border-color 0.22s;
+      box-shadow: 0 2px 8px #ef444419;
+      outline: none;
+    }
+    .contact-form-card input:focus,
+    .contact-form-card textarea:focus,
+    .contact-form-card select:focus {
+      border-color: var(--fire-red);
+      box-shadow: 0 0 12px #fca5a534;
+    }
+    .contact-form-card textarea {
+      resize: vertical;
+      min-height: 104px;
+    }
+    .contact-form-card button[type="submit"] {
+      margin-top: 1.12em;
+      background: var(--fire-red);
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: .8px;
+      font-size: 1.18rem;
+      padding: .98em .9em;
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px #ef44442b;
+      display: flex;
+      gap: .8em;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.21s, box-shadow 0.23s, transform 0.18s;
+      opacity: 1;
+    }
+    .contact-form-card button[type="submit"]:hover:not(:disabled) {
+      background: var(--fire-red-dark);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 32px #ef44442b;
+    }
+    .contact-form-card button[type="submit"]:disabled {
+      opacity: .62;
+      cursor: not-allowed;
+    }
+    .form-status {
+      display: none;
+      margin-bottom: .45em;
+      padding: .7em 1em;
+      border-radius: 7px;
+      font-weight: 600;
+      font-size: 1.09em;
+      animation: fadeIn 0.4s;
+    }
+    .form-status.success {
+      background: #def7ec;
+      color: #13795b;
+      border-left: 5px solid #1ec58a;
+      display: flex;
+      gap: .64em;
+      align-items: center;
+      margin-top: -.6em;
+      margin-bottom: .95em;
+    }
+    .form-status.error {
+      background: #fee2e2;
+      color: #b91c1c;
+      border-left: 5px solid #ef4444;
+      display: flex;
+      gap: .64em;
+      align-items: center;
+      margin-top: -.6em;
+      margin-bottom: .95em;
+    }
+
+    .contact-sidebar-card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      padding: 2.1em 1.38em 2em 1.38em;
+      margin-bottom: 1.2em;
+      animation: fadeInUp 1.12s;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1em;
+      min-width: 0;
+    }
+    .contact-sidebar-card h2 {
+      color: var(--fire-red-dark);
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      letter-spacing: -.3px;
+      text-align: left;
+    }
+    .department-contacts .contact-row:not(:last-child) {
+      border-bottom: 1.1px solid #fca5a53b;
+      margin-bottom: .8em;
+      padding-bottom: .5em;
+    }
+    .department-contacts .contact-title {
+      color: #b91c1c;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.16em;
+      letter-spacing: -.5px;
+    }
+    .department-contacts .dep-icon {
+      margin-right: 0.4em;
+      color: var(--fire-red);
+    }
+    .department-contacts .dep-contact,
+    .department-contacts a {
+      color: #7c2828;
+      font-weight: 600;
+      font-size: 1em;
+      display: block;
+      margin-bottom: .12em;
+      text-decoration: none;
+      transition: text-decoration .18s, color .21s;
+    }
+    .department-contacts a:hover {
+      text-decoration: underline;
+      color: #ef4444;
+    }
+    .department-contacts .dep-desc {
+      color: #444;
+      font-size: .95em;
+      margin-bottom: .53em;
+    }
+    /* FadeIn and Up */
+    @keyframes fadeIn {
+      from { opacity: 0;}
+      to { opacity: 1;}
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    @keyframes fadeInUpForm {
+      to { opacity: 1; transform: none;}
+    }
+    @keyframes pulse {
+      0%,100% {box-shadow: 0 0 0 0 #ef444433;}
+      50% {box-shadow: 0 0 0 22px #ef444408;}
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container">
+      <nav class="nav">
+        <a href="{% url 'index' %}" class="logo" style="display: flex; align-items: center;">
+          <img src="{% static 'ui/images/logo.webp' %}" alt="Chengannur Fire Rescue Logo" style="height: 40px; vertical-align: middle; margin-right: 8px;" />
+          <span style="font-weight: 700; color: #ef4444; font-size: 1.3rem;">Chengannur Fire Rescue</span>
+        </a>
+        <div class="nav-menu" id="nav-menu">
+          <ul class="nav-list">
+            <li><a href="{% url 'index' %}" class="nav-link">Home</a></li>
+            <li><a href="{% url 'about' %}" class="nav-link">About</a></li>
+            <li><a href="{% url 'contact' %}" class="nav-link active">Contact</a></li>
+          </ul>
+          <div class="nav-auth" id="nav-auth">
+            <a href="{% url 'user_login' %}" class="btn btn-primary">Login</a>
+          </div>
+        </div>
+        <div class="nav-toggle" id="nav-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="contact-top">
+      <h1>Contact Us</h1>
+      <p>Get in touch with Chengannur Fire Rescue Services. We're here to help with emergencies, inquiries, and community safety.</p>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <!-- Contact Cards -->
+        <div class="contact-card">
+          <div class="icon"><i class="fas fa-phone"></i></div>
+          <h2>Emergency Line</h2>
+          <div class="number">101</div>
+          <p>24/7 Emergency Response</p>
+        </div>
+        <div class="contact-card" style="background:#eff6ff;">
+          <div class="icon" style="background:#2563eb;"><i class="fas fa-building"></i></div>
+          <h2>Office Phone</h2>
+          <div class="number" style="font-size:1.5rem;">(479) 123-4567</div>
+          <p>Mon-Fri: 8 AM - 6 PM</p>
+        </div>
+        <div class="contact-card" style="background:#f0fdf4;">
+          <div class="icon" style="background:#15803d;"><i class="fas fa-envelope"></i></div>
+          <h2>Email</h2>
+          <div class="number" style="font-size:1.08rem;">info@chengannurfire.gov.in</div>
+          <p>24-hour response time</p>
+        </div>
+      </div>
+      <div>
+        <!-- Contact Form -->
+        <div class="contact-form-card">
+          <h2>Send us a Message</h2>
+          <div id="form-success" class="form-status"></div>
+          <div id="form-error" class="form-status"></div>
+          <form id="contact-form" autocomplete="off" novalidate>
+            <div class="form-group">
+              <label for="contact-name">Full Name *</label>
+              <input type="text" id="contact-name" name="name" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-email">Email *</label>
+              <input type="email" id="contact-email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="contact-phone">Phone Number</label>
+              <input type="tel" id="contact-phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="contact-subject">Subject *</label>
+              <select id="contact-subject" name="subject" required>
+                <option value="" disabled selected>Select a subject</option>
+                <option value="general">General Inquiry</option>
+                <option value="inspection">Fire Inspection</option>
+                <option value="training">Training Programs</option>
+                <option value="community">Community Education</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="contact-message">Message *</label>
+              <textarea id="contact-message" name="message" rows="6" required></textarea>
+            </div>
+            <button id="contact-submit" type="submit" class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+      <div>
+        <!-- Sidebar contact info -->
+        <div class="contact-sidebar-card">
+          <h2>Department Contacts</h2>
+          <div class="department-contacts">
+            <div class="contact-row">
+              <div class="contact-title">Fire Emergency</div>
+              <span class="dep-contact"><i class="fas fa-phone dep-icon"></i>101</span>
+              <a href="mailto:fire@chengannurfire.gov.in"><i class="fas fa-envelope dep-icon"></i>fire@chengannurfire.gov.in</a>
+              <span class="dep-desc"><i class="fas fa-clock dep-icon"></i>24/7</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-title">Rescue Operations</div>
+              <span class="dep-contact"><i class="fas fa-phone dep-icon"></i>(479) 123-4568</span>
+              <a href="mailto:rescue@chengannurfire.gov.in"><i class="fas fa-envelope dep-icon"></i>rescue@chengannurfire.gov.in</a>
+              <span class="dep-desc"><i class="fas fa-clock dep-icon"></i>24/7</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-title">Fire Prevention</div>
+              <span class="dep-contact"><i class="fas fa-phone dep-icon"></i>(479) 123-4569</span>
+              <a href="mailto:prevention@chengannurfire.gov.in"><i class="fas fa-envelope dep-icon"></i>prevention@chengannurfire.gov.in</a>
+              <span class="dep-desc"><i class="fas fa-clock dep-icon"></i>Mon-Fri: 9 AM - 5 PM</span>
+            </div>
+            <div class="contact-row">
+              <div class="contact-title">Administrative</div>
+              <span class="dep-contact"><i class="fas fa-phone dep-icon"></i>(479) 123-4567</span>
+              <a href="mailto:admin@chengannurfire.gov.in"><i class="fas fa-envelope dep-icon"></i>admin@chengannurfire.gov.in</a>
+              <span class="dep-desc"><i class="fas fa-clock dep-icon"></i>Mon-Fri: 8 AM - 6 PM</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-sidebar-card">
+          <h2>Location</h2>
+          <div class="department-contacts">
+            <div>
+              <span class="dep-contact"><i class="fas fa-map-marker-alt dep-icon"></i>Chengannur Fire Station</span>
+              <span class="dep-desc">Chengannur, Alappuzha, Kerala, India</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Emergency Services</h3>
+          <ul>
+            <li><a href="tel:101">Fire Emergency: 101</a></li>
+            <li><a href="tel:108">Medical Emergency: 108</a></li>
+            <li><a href="tel:100">Police Emergency: 100</a></li>
+            <li><a href="tel:1077">Disaster Management: 1077</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="{% url 'about' %}">About Us</a></li>
+            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+            <li><a href="{% url 'user_login' %}">Portal Access</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Information</h3>
+          <ul>
+            <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+            <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+            <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+            <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Service Areas</h3>
+          <ul>
+            <li>Chengannur Municipality</li>
+            <li>Pandanad Panchayat</li>
+            <li>Mulakkuzha Village</li>
+            <li>Ennakkad Panchayat</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+          <p>Created by students of College of Engineering Chengannur</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'ui/js/main.js' %}"></script>
+  <script>
+    // Animate form status
+    function showStatus(type, message) {
+      const successEl = document.getElementById("form-success");
+      const errorEl = document.getElementById("form-error");
+      successEl.style.display = "none";
+      errorEl.style.display = "none";
+      if (type === "success") {
+        successEl.textContent = message;
+        successEl.className = "form-status success";
+        successEl.style.display = "flex";
+      } else if (type === "error") {
+        errorEl.textContent = message;
+        errorEl.className = "form-status error";
+        errorEl.style.display = "flex";
+      }
+    }
+  </script>
+</body>
+</html>

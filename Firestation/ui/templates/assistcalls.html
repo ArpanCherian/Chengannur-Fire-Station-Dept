@@ -1,0 +1,653 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assistance Incident Calls - Assistance Calls Report</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --clr-bg: #f4fdf7;
+            --clr-section: #fff;
+            --clr-border: #4caf50;
+            --clr-border-soft: #e8f5e9;
+            --clr-green: #2e7d32;
+            --clr-accent: #f1f8f4;
+            --clr-title: #1b5e20;
+            --clr-label: #33691e;
+            --shadow: 0 6px 32px 0 rgba(46, 125, 50, 0.08);
+            --section-radius: 13px;
+            --transition: 0.23s cubic-bezier(.69, 1.3, .68, .96);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--clr-bg);
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            color: var(--clr-title);
+            padding: 20px 10px;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--clr-section);
+            border-radius: calc(var(--section-radius) * 1.4);
+            box-shadow: var(--shadow);
+            padding: 35px 32px 26px 32px;
+            border: 1.7px solid var(--clr-border-soft);
+            animation: fadeInUp .7s;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 2.25rem;
+            color: var(--clr-green);
+            font-weight: 900;
+            letter-spacing: .01em;
+            animation: fadeInDown .84s;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--clr-label);
+            font-size: 0.95rem;
+            margin-bottom: 32px;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e8f5e9;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2e7d32, #66bb6a);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .section-title {
+            font-size: 1.22rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--clr-title);
+            letter-spacing: .02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-title i {
+            color: var(--clr-green);
+            font-size: 1.1rem;
+        }
+
+        .section-title .toggle-icon {
+            margin-left: auto;
+            transition: transform 0.3s;
+            color: var(--clr-green);
+        }
+
+        .section-title .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .report-section {
+            background: var(--clr-section);
+            border-radius: var(--section-radius);
+            border: 1.7px solid var(--clr-border);
+            box-shadow: 0 2px 9px rgba(76, 175, 80, 0.1);
+            margin-bottom: 24px;
+            padding: 28px 26px;
+            animation: fadeInUp .55s backwards;
+            transition: box-shadow var(--transition), border var(--transition);
+        }
+
+        .report-section:hover,
+        .report-section:focus-within {
+            box-shadow: 0 8px 26px rgba(76, 175, 80, 0.15);
+            border-color: #81c784;
+        }
+
+        .section-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+        }
+
+        .section-content.collapsed {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        .form-row,
+        .form-row-multicol {
+            display: grid;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .form-row {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .form-row-multicol {
+            grid-template-columns: auto repeat(4, 1fr);
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label,
+        .item-label {
+            font-size: 0.92rem;
+            color: var(--clr-label);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="time"],
+        input[type="date"],
+        select,
+        textarea {
+            background: var(--clr-accent);
+            border-radius: 8px;
+            border: 1px solid #c8e6c9;
+            padding: 12px 14px;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.21s;
+            outline: none;
+            font-family: 'Inter', Arial, sans-serif;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border: 1.7px solid var(--clr-green);
+            box-shadow: 0 0 8px rgba(46, 125, 50, 0.2);
+            transform: translateY(-1px);
+        }
+
+        input:valid,
+        select:valid,
+        textarea:valid {
+            border-color: #66bb6a;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            margin: 16px 0;
+            padding: 16px;
+            background: #f9fdf9;
+            border-radius: 8px;
+            border: 1px solid #e8f5e9;
+        }
+
+        .radio-group-title,
+        .checkbox-group-title {
+            font-weight: 600;
+            color: var(--clr-title);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .radio-label,
+        .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            margin-bottom: 10px;
+            font-size: 0.98rem;
+            color: var(--clr-label);
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .radio-label:hover,
+        .checkbox-label:hover {
+            color: var(--clr-green);
+        }
+
+        .radio-label input,
+        .checkbox-label input {
+            margin-right: 6px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .single-column {
+            margin-bottom: 18px;
+            width: 100%;
+        }
+
+        .table-box {
+            overflow-x: auto;
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid #e8f5e9;
+        }
+
+        .dynamic-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 800px;
+        }
+
+        .dynamic-table th,
+        .dynamic-table td {
+            border: 1px solid #dcedc8;
+            padding: 10px 8px;
+            text-align: left;
+        }
+
+        .dynamic-table th {
+            background: linear-gradient(135deg, #e8f5e9, #f9fdf9);
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #1b5e20;
+            position: sticky;
+            top: 0;
+        }
+
+        .dynamic-table td input[type="text"],
+        .dynamic-table td input[type="number"] {
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #dcedc8;
+            font-size: 0.92rem;
+            background: #fafbfc;
+            width: 100%;
+        }
+
+        .add-row-btn {
+            display: block;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            border-radius: 8px;
+            margin: 12px auto 0 auto;
+            padding: 10px 0;
+            font-weight: 700;
+            width: 200px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-row-btn:hover {
+            background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.25);
+        }
+
+        .add-row-btn:active {
+            transform: translateY(0);
+        }
+
+        .red-x {
+            color: #2e7d32;
+            font-weight: bold;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 4px 8px;
+            border: none;
+            background: transparent;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .red-x:hover {
+            background: #e8f5e9;
+            transform: scale(1.1);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 36px;
+            flex-wrap: wrap;
+        }
+
+        .draft-btn,
+        .submit-btn {
+            border: none;
+            border-radius: 11px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            padding: 16px 40px;
+            min-width: 200px;
+            transition: all 0.3s;
+            box-shadow: 0 3px 13px rgba(46, 125, 50, 0.2);
+            outline: none;
+            letter-spacing: .03em;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .draft-btn {
+            background: linear-gradient(135deg, #78909c, #607d8b);
+            color: #fff;
+        }
+
+        .draft-btn:hover {
+            background: linear-gradient(135deg, #607d8b, #546e7a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: #fff;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #1b5e20, #145016);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.35);
+        }
+
+        .required::after {
+            content: " *";
+            color: #2e7d32;
+        }
+
+        .help-text {
+            font-size: 0.82rem;
+            color: #558b2f;
+            margin-top: 4px;
+        }
+
+        .alert {
+            max-width: 380px;
+            margin: 20px auto;
+            padding: 12px 20px;
+            border-radius: 7px;
+            font-weight: 600;
+            text-align: center;
+            box-shadow: 0 4px 14px #2d522f66;
+            animation: fadeInDown 1.1s ease;
+        }
+
+
+        .alert-error {
+            background-color: #ffd2d2;
+            color: #b30000;
+        }
+
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(38px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 16px;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row-multicol {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .draft-btn,
+            .submit-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <form method="post" class="main-container" id="reportForm" action="{% url 'assistancecall_report' %}">
+        <a href="/reportcase/"
+            style="text-decoration:none; color:var(--clr-red); font-weight:600; margin-bottom:20px; display:inline-block;">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+        {% csrf_token %}
+        <h1><i class="fas fa-suitcase-medical"></i> Assistance Calls</h1>
+        <p class="subtitle">Assistance Calls Report Form</p>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- Display form.errors near the respective form fields as well -->
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Section 1: Incident Details -->
+        <div class="report-section">
+            <div class="section-title" onclick="toggleSection(this)">
+                <i class="fas fa-info-circle"></i>
+                <span>Incident Details</span>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="section-content">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="userName" class="required">Name of the User</label>
+                        <input type="text" name="userName" value="{{ request.session.username }}" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label for="form_date" class="required">Date of Filling the Form</label>
+                        <input type="date" id="form_date" name="form_date" required>
+                    </div>
+                </div>
+                <div class="form-row" class="single-column">
+                    <div class="form-group">
+                        <label for="incident_type">Incident type</label>
+                        <input type="text" id="incident_type" name="incident_type" placeholder="Incident nature"
+                            required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="call_number" class="required">Call Number</label>
+                        <input type="text" id="call_number" name="call_number" placeholder="2025001" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="call_received" class="required">Time Call Received</label>
+                        <input type="time" id="call_received" name="call_received" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time_left_station">Time Left Station</label>
+                        <input type="time" id="time_left_station" name="time_left_station">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="time_reached_scene">Time Reached Scene</label>
+                        <input type="time" id="time_reached_scene" name="time_reached_scene">
+                    </div>
+                    <div class="form-group">
+                        <label for="time_returned">Time Returned</label>
+                        <input type="time" id="time_returned" name="time_returned">
+                    </div>
+                </div>
+                <div class="form-row" class="single-column">
+                    <div class="form-group">
+                        <label for="assistance_details">Assistance Details</label>
+                        <input type="text" id="assistance_details" name="assistance_details"
+                            placeholder="Description of Assistance Provided">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="electrical_chemicals">Electrical / Gas / Chemicals</label>
+                        <input type="text" id="electrical_chemicals" name="electrical_chemicals"
+                            placeholder="Present Hazards">
+                    </div>
+                    <div class="form-group">
+                        <label for="hazardous_materials">Hazardous Materials</label>
+                        <input type="text" id="hazardous_materials" name="hazardous_materials"
+                            placeholder="List of Hazardous materials present">
+                    </div>
+                    <div class="form-group">
+                        <label for="weather_conditions">Weather Conditions</label>
+                        <select id="weather_conditions" name="weather_conditions">
+                            <option value="">Select Condition</option>
+                            <option value="clear">Clear</option>
+                            <option value="rain">Rain</option>
+                            <option value="windy">Windy</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group single-column">
+                    <label for="caller_contact">Caller (Name & Contact)</label>
+                    <input type="text" id="caller_contact" name="caller_contact" placeholder="Caller information">
+                </div>
+                <div class="form-group single-column">
+                    <label for="source_of_call">Source of Call</label>
+                    <select id="source_of_call" name="source_of_call">
+                        <option value="">Select Source</option>
+                        <option value="telephone">Telephone</option>
+                        <option value="sms">SMS</option>
+                        <option value="in_person">In Person</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group single-column">
+                    <label for="exact_location" class="required">Exact Location</label>
+                    <input type="text" id="exact_location" name="exact_location" placeholder="Precise location details"
+                        required>
+                </div>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button type="button" class="draft-btn" onclick="saveDraft()"><i class="fas fa-save"></i> Save as
+                Draft</button>
+            <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Submit Report</button>
+        </div>
+    </form>
+
+    <script>
+        // Toggle section collapse
+        function toggleSection(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('.toggle-icon');
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+        }
+
+        // Update progress bar
+        function updateProgress() {
+            const form = document.getElementById('reportForm');
+            const inputs = form.querySelectorAll('input:not([type="radio"]):not([type="checkbox"]), select, textarea');
+            let filled = 0;
+            let total = 0;
+
+            inputs.forEach(input => {
+                if (input.type !== 'button' && input.type !== 'submit') {
+                    total++;
+                    if (input.value.trim() !== '' && input.value !== '0') {
+                        filled++;
+                    }
+                }
+            });
+
+            const radios = form.querySelectorAll('input[type="radio"]');
+            const radioGroups = {};
+            radios.forEach(radio => {
+                if (!radioGroups[radio.name]) {
+                    radioGroups[radio.name] = false;
+                    total++;
+                }
+                if (radio.checked) {
+                    radioGroups[radio.name] = true;
+                }
+            });
+            filled += Object.values(radioGroups).filter(v => v).length;
+
+            const percentage = total > 0 ? (filled / total) * 100 : 0;
+            document.getElementById('progressFill').style.width = percentage + '%';
+        }
+
+        // Page load event: ONLY progress/event listeners (no draft)
+        window.addEventListener('load', function () {
+            const form = document.getElementById('reportForm');
+            form.addEventListener('input', updateProgress);
+            form.addEventListener('change', updateProgress);
+            updateProgress();
+        });
+    </script>
+</body>
+
+</html>
