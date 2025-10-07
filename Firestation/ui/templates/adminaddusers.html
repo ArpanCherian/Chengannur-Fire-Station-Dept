@@ -1,0 +1,808 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Management - Chengannur Fire Rescue Services</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'ui/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/components.css' %}" />
+    <link rel="stylesheet" href="{% static 'ui/css/animations.css' %}" />
+    <style>
+        :root {
+            --clr-bg: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            --clr-card: #ffffff;
+            --clr-primary: #1a1f36;
+            --clr-secondary: #6b7280;
+            --clr-red: #ef4444;
+            --clr-red-hover: #dc2626;
+            --clr-blue: #3b82f6;
+            --clr-green: #10b981;
+            --clr-amber: #f59e0b;
+            --clr-purple: #8b5cf6;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow: 0 4px 16px rgba(31, 37, 53, 0.09);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        /* Header/Navbar */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--clr-card);
+            padding: 18px 38px 12px 38px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeInDown 1.1s cubic-bezier(.5, 2.1, .6, .97);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .header-logo img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #faadad1a;
+        }
+
+        .header-title {
+            font-size: 1.38rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 36px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--clr-secondary);
+            font-size: 1.09rem;
+            font-weight: 500;
+            text-decoration: none;
+            padding: 7px 16px 7px 16px;
+            border-radius: 10px 10px 0 0;
+            transition: background var(--transition), color var(--transition);
+        }
+
+        .nav-link.active,
+        .nav-link:hover {
+            background: #fdecec;
+            color: var(--clr-red);
+            border-bottom: 2px solid var(--clr-red);
+        }
+
+        .nav-profile {
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-end-start-radius: 13px;
+            /* slightly more visual roundness */
+            padding: 9px 26px 9px 16px;
+            /* more padding for boxiness */
+            outline: none;
+            /* subtle red shadow for depth */
+            /* soft red border */
+            transition: box-shadow 0.18s, border 0.18s;
+        }
+
+        /* Optional hover/focus effect for more dynamic feedback */
+        .nav-profile:hover,
+        .nav-profile:focus-within {
+            box-shadow: 0 4px 16px #f261615e;
+        }
+
+
+        .logout-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--clr-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+            width: 250px;
+            height: 150px;
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding-top: 8px;
+        }
+
+        .buttonBOX {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60%;
+            background-color: #f26161;
+            margin-top: 15px;
+            border-radius: 30px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .buttonBOX:hover {
+            background-color: #d94c4c;
+            /* Slightly darker red on hover */
+            box-shadow: 0 6px 14px rgba(242, 97, 97, 0.6);
+        }
+
+        .nav-profile:focus-within .logout-menu {
+            display: flex;
+        }
+
+        .logout-link {
+            color: var(--clr-red);
+            font-weight: 600;
+            padding: 10px 16px;
+            color: white;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+
+        .logout-link:hover {
+            background: var(--clr-red-light);
+        }
+
+
+        .nav-profile i {
+            color: var(--clr-red);
+            font-size: 1.36rem;
+        }
+
+        .nav-profile-data {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .nav-profile-name {
+            color: var(--clr-primary);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .nav-profile-role {
+            font-size: 0.88rem;
+            color: var(--clr-red);
+            line-height: 1;
+        }
+
+        body {
+            background: var(--clr-bg);
+            font-family: 'Inter', Arial, sans-serif;
+            color: var(--clr-primary);
+        }
+
+        .container {
+            max-width: 1220px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            box-shadow: var(--shadow);
+        }
+
+                /* Page Header */
+        .page-header {
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--clr-primary);
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-secondary) 100%);
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--clr-secondary);
+            font-weight: 400;
+        }
+
+                /* Alert Messages */
+        .alert {
+            max-width: 600px;
+            margin: 24px auto;
+            padding: 16px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            animation: slideDown 0.4s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .alert::before {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 1.25rem;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-left: 4px solid #10b981;
+        }
+
+        .alert-success::before {
+            content: '\f058';
+            color: #10b981;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border-left: 4px solid #ef4444;
+        }
+
+        .alert-error::before {
+            content: '\f06a';
+            color: #ef4444;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 50px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-icon.admin {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            color: var(--clr-red);
+        }
+
+        .section-icon.user {
+            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+            color: var(--clr-blue);
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+        }
+
+        /* Modern Table */
+        .table-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .user-admin-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .user-admin-table thead {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+
+        .user-admin-table th {
+            padding: 18px 24px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--clr-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .user-admin-table tbody tr {
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .user-admin-table tbody tr:hover {
+            background: rgba(239, 68, 68, 0.02);
+            transform: scale(1.005);
+        }
+
+        .user-admin-table td {
+            padding: 20px 24px;
+            color: var(--clr-primary);
+            font-size: 0.95rem;
+        }
+
+        .user-admin-table td:first-child {
+            font-weight: 600;
+            color: var(--clr-secondary);
+        }
+
+        /* Delete Button */
+        .delete-btn {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: var(--clr-red);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 8px 20px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .delete-btn:hover {
+            background: var(--clr-red);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Add Form Block */
+        .addform-block {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .addform-block strong {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--clr-primary);
+            margin-bottom: 24px;
+        }
+
+        .addform-block strong::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--clr-red);
+            border-radius: 2px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row label {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-weight: 500;
+            color: var(--clr-secondary);
+            font-size: 0.9rem;
+        }
+
+        .form-row input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            background: #fafafa;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: var(--clr-red);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .addform-block button[type="submit"] {
+            background: linear-gradient(135deg, var(--clr-red) 0%, var(--clr-red-hover) 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            margin-top: 8px;
+        }
+
+        .addform-block button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .addform-block button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+
+    </style>
+</head>
+
+<body>
+    <!-- HEADER/NAV -->
+    <div class="main-header">
+        <div class="header-logo">
+            <img src="{% static 'ui/images/logo.webp' %}" alt="Station Logo">
+            <div>
+                <div class="header-title">Fireforce Station</div>
+                <div style="font-size:.98rem; color:#ef5350;">Emergency Response Portal</div>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="{% url 'admindashboard' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'adminreportcase' %}" class="nav-link">Report Case</a>
+            <a href="{% url 'adminanalytics' %}" class="nav-link">Analytics</a>
+            <a href="{% url 'adminviewreport' %}" class="nav-link">Reports</a>
+            <a href="{% url 'adminadduser' %}" class="nav-link active">Users and Admin</a>
+        </nav>
+        <div class="nav-profile" tabindex="0">
+            <i class="fa-solid fa-user"></i>
+            <div class="nav-profile-data">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <span class="nav-profile-role">Admin</span>
+            </div>
+            <div class="logout-menu">
+                <span class="nav-profile-name">{{ request.session.username|default:"Station Admin" }}</span>
+                <div class="buttonBOX">
+                    <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- ALERT MESSAGES -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- MAIN CONTENT -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">User & Admin Management</h1>
+            <p class="page-subtitle">Manage system administrators and registered users</p>
+        </div>
+
+        <!-- ADMINS SECTION -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon admin">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h2 class="section-title">System Administrators</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="user-admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admin in all_admins %}
+                            <tr>
+                                <td>{{ admin.adminid }}</td>
+                                <td>{{ admin.adminname }}</td>
+                                <td>{{ admin.adminusername }}</td>
+                                <td>{{admin.adminpassword}}</td>
+                                <td>
+                                    <form method="post" action="{% url 'deleteadmin' admin.id %}" style="display:inline">
+                                        {% csrf_token %}
+                                        <button class="delete-btn" onclick="return confirm('Are you sure you want to delete admin {{ admin.adminusername }}?')">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--clr-secondary); padding: 40px;">
+                                    <i class="fa-solid fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                                    No administrators found
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="addform-block">
+                <strong><i class="fa-solid fa-plus-circle"></i> Add New Administrator</strong>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="admin">
+                    <div class="form-row">
+                        <label>
+                            Full Name
+                            <input type="text" name="adminname" required placeholder="Enter full name">
+                        </label>
+                        <label>
+                            Username
+                            <input type="text" name="adminusername" required placeholder="Choose username">
+                        </label>
+                        <label>
+                            Admin ID
+                            <input type="number" name="adminid" required placeholder="Enter admin ID">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            Password
+                            <input type="password" name="adminpassword" required placeholder="Create password">
+                        </label>
+                        <label>
+                            Confirm Password
+                            <input type="password" name="adminconfirmpassword" required placeholder="Confirm password">
+                        </label>
+                    </div>
+                    <button type="submit">
+                        <i class="fa-solid fa-user-plus"></i> Add Administrator
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- USERS SECTION -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon user">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <h2 class="section-title">Registered Users</h2>
+            </div>
+
+            <div class="table-container">
+                <table class="user-admin-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in all_users %}
+                            <tr>
+                                <td>{{ user.userid }}</td>
+                                <td>{{ user.fullname }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{user.password}}</td>
+                                <td>
+                                    <form method="post" action="{% url 'deleteuser' user.id %}" style="display:inline">
+                                        {% csrf_token %}
+                                        <button class="delete-btn" onclick="return confirm('Are you sure you want to delete user {{ user.username }}?')">
+                                            <i class="fa-solid fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; color: var(--clr-secondary); padding: 40px;">
+                                    <i class="fa-solid fa-inbox" style="font-size: 2rem; margin-bottom: 12px; display: block;"></i>
+                                    No users found
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="addform-block">
+                <strong><i class="fa-solid fa-plus-circle"></i> Add New User</strong>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="user">
+                    <div class="form-row">
+                        <label>
+                            Full Name
+                            <input type="text" name="fullname" required placeholder="Enter full name">
+                        </label>
+                        <label>
+                            Username
+                            <input type="text" name="username" required placeholder="Choose username">
+                        </label>
+                        <label>
+                            User ID
+                            <input type="number" name="userid" required placeholder="Enter user ID">
+                        </label>
+                    </div>
+                    <div class="form-row">
+                        <label>
+                            Password
+                            <input type="password" name="password" required placeholder="Create password">
+                        </label>
+                        <label>
+                            Confirm Password
+                            <input type="password" name="confirmpassword" required placeholder="Confirm password">
+                        </label>
+                    </div>
+                    <button type="submit">
+                        <i class="fa-solid fa-user-plus"></i> Add User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>Emergency Services</h3>
+            <ul>
+              <li><a href="tel:101">Fire Emergency: 101</a></li>
+              <li><a href="tel:108">Medical Emergency: 108</a></li>
+              <li><a href="tel:100">Police Emergency: 100</a></li>
+              <li><a href="tel:1077">Disaster Management: 1077</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Quick Links</h3>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Contact Us</a></li>
+              <li><a href="#">Portal Access</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Contact Information</h3>
+            <ul>
+              <li><i class="fas fa-map-marker-alt"></i> Chengannur, Alappuzha, Kerala</li>
+              <li><i class="fas fa-phone"></i> Office: (479) 123-4567</li>
+              <li><i class="fas fa-envelope"></i> info@chengannurfire.gov.in</li>
+              <li><i class="fas fa-clock"></i> 24/7 Emergency Response</li>
+            </ul>
+          </div>
+
+          <div class="footer-section">
+            <h3>Service Areas</h3>
+            <ul>
+              <li>Chengannur Municipality</li>
+              <li>Pandanad Panchayat</li>
+              <li>Mulakkuzha Village</li>
+              <li>Ennakkad Panchayat</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-bottom-content">
+            <p>&copy; 2024 Chengannur Fire Rescue Services. All rights reserved.</p>
+            <p>Created by students of College of Engineering Chengannur</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+</body>
+
+</html>

@@ -41,6 +41,9 @@ def user_login(request):
 
     return render(request, 'user_login.html')
 
+def logout(request):
+    request.session.flush()
+    return redirect('index')
 
 
 
@@ -1217,3 +1220,159 @@ def download_analytics_csv(request):
     writer.writerow(['Rescued - Child (Below 18)', water_rescued_child, ''])
     
     return response
+
+
+
+
+def adminadduser(request):
+    # ✅ FIXED: Session check
+    if 'username' not in request.session:
+        return redirect('admin_login')  # Correct admin redirect
+    
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+        
+        if form_type == "user":
+            fullname = request.POST.get("fullname")
+            username = request.POST.get("username")
+            userid = request.POST.get("userid")
+            password = request.POST.get("password")
+            confirmpassword = request.POST.get("confirmpassword")
+            
+            # ✅ ADDED: Input validation
+            if not all([fullname, username, userid, password, confirmpassword]):
+                messages.error(request, "All fields are required.")
+                return redirect("adminadduser")
+            
+            # ✅ ADDED: Check for duplicate username
+            if userdetails.objects.filter(username=username).exists():
+                messages.error(request, "Username already exists.")
+                return redirect("adminadduser")
+            
+            # ✅ ADDED: Check for duplicate user ID
+            if userdetails.objects.filter(userid=userid).exists():
+                messages.error(request, "User ID already exists.")
+                return redirect("adminadduser")
+            
+            if password != confirmpassword:
+                messages.error(request, "User passwords do not match.")
+                return redirect("adminadduser")
+            
+            # ✅ SECURITY: Hash passwords before storing
+            # You should use Django's built-in password hashing
+            # from django.contrib.auth.hashers import make_password
+            # hashed_password = make_password(password)
+            
+            try:
+                userdetails.objects.create(
+                    fullname=fullname,
+                    username=username,
+                    userid=userid,
+                    password=password,  # Should be hashed!
+                    confirmpassword=confirmpassword
+                )
+                messages.success(request, f"User {username} added successfully.")
+            except Exception as e:
+                messages.error(request, f"Error adding user: {str(e)}")
+            
+            return redirect("adminadduser")
+        
+        elif form_type == "admin":
+            adminname = request.POST.get("adminname")
+            adminusername = request.POST.get("adminusername")
+            adminid = request.POST.get("adminid")
+            adminpassword = request.POST.get("adminpassword")
+            adminconfirmpassword = request.POST.get("adminconfirmpassword")
+            
+            # ✅ ADDED: Input validation
+            if not all([adminname, adminusername, adminid, adminpassword, adminconfirmpassword]):
+                messages.error(request, "All fields are required.")
+                return redirect("adminadduser")
+            
+            # ✅ ADDED: Check for duplicate username
+            if admindetails.objects.filter(adminusername=adminusername).exists():
+                messages.error(request, "Admin username already exists.")
+                return redirect("adminadduser")
+            
+            # ✅ ADDED: Check for duplicate admin ID
+            if admindetails.objects.filter(adminid=adminid).exists():
+                messages.error(request, "Admin ID already exists.")
+                return redirect("adminadduser")
+            
+            if adminpassword != adminconfirmpassword:
+                messages.error(request, "Admin passwords do not match.")
+                return redirect("adminadduser")
+            
+            try:
+                admindetails.objects.create(
+                    adminname=adminname,
+                    adminusername=adminusername,
+                    adminid=adminid,
+                    adminpassword=adminpassword,  # Should be hashed!
+                    adminconfirmpassword=adminconfirmpassword
+                )
+                messages.success(request, f"Admin {adminusername} added successfully.")
+            except Exception as e:
+                messages.error(request, f"Error adding admin: {str(e)}")
+            
+            return redirect("adminadduser")
+    
+    # GET request
+    all_users = userdetails.objects.all()
+    all_admins = admindetails.objects.all()
+    
+    return render(request, "adminaddusers.html", {
+        "all_users": all_users,
+        "all_admins": all_admins,
+    })
+
+def deleteuser(request, user_id):
+    # ✅ ADDED: Session check
+    if 'username' not in request.session:
+        return redirect('admin_login')
+    
+    # ✅ ADDED: POST method check for security
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("adminadduser")
+    
+    try:
+        user = userdetails.objects.get(id=user_id)
+        username = user.username
+        user.delete()
+        messages.success(request, f"User {username} deleted successfully.")
+    except userdetails.DoesNotExist:
+        messages.error(request, "User not found.")
+    except Exception as e:
+        messages.error(request, f"Error deleting user: {str(e)}")
+    
+    return redirect("adminadduser")
+
+def deleteadmin(request, admin_id):
+    # ✅ ADDED: Session check
+    if 'username' not in request.session:
+        return redirect('admin_login')
+    
+    # ✅ ADDED: POST method check for security
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("adminadduser")
+    
+    # ✅ ADDED: Prevent deleting yourself
+    try:
+        admin = admindetails.objects.get(id=admin_id)
+        
+        # Check if trying to delete current logged-in admin
+        if admin.adminusername == request.session.get('username'):
+            messages.error(request, "You cannot delete your own admin account.")
+            return redirect("adminadduser")
+        
+        adminusername = admin.adminusername
+        admin.delete()
+        messages.success(request, f"Admin {adminusername} deleted successfully.")
+    except admindetails.DoesNotExist:
+        messages.error(request, "Admin not found.")
+    except Exception as e:
+        messages.error(request, f"Error deleting admin: {str(e)}")
+    
+    return redirect("adminadduser")

@@ -5,7 +5,7 @@ urlpatterns = [
     path('', views.home, name='index'),
     path('index/',views.home, name='index'),      # home page
     path('about/', views.about, name='about'),   # about page
-    path('logout/', views.home, name='logout'), # logout
+    path('logout/', views.logout, name='logout'), # logout
     path('contact/', views.contact, name='contact'), # contact page
     path('user_login/', views.user_login, name='user_login'),    # login page
     path('admin_login/', views.admin_login, name='admin_login'),  # admin login page
@@ -36,4 +36,7 @@ urlpatterns = [
     path('allcase-detail/<str:model_type>/<int:case_id>/', views.allcase_detail, name='allcase_detail'),
     path('adminanalytics/', views.adminanalytics, name='adminanalytics'), # admin analytics page
     path('adminanalytics/download-csv/', views.download_analytics_csv, name='download_analytics_csv'), # admin download analytics data as CSV
+    path('adminadduser/', views.adminadduser, name='adminadduser'), # admin add user page
+    path('deleteuser/<int:user_id>/', views.deleteuser, name="deleteuser"),
+    path('deleteadmin/<int:admin_id>/', views.deleteadmin, name="deleteadmin"),
 ]

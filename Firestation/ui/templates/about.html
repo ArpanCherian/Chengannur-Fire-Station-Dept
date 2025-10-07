@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,8 +26,15 @@
             --text-dark: #1e293b;
             --text-gray: #575757;
         }
-        body { background: var(--light-bg); }
-        .container { max-width: 1280px; margin: auto; }
+
+        body {
+            background: var(--light-bg);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: auto;
+        }
 
         /* Fixes for "navbar overlapping content" */
         main {
@@ -34,6 +42,7 @@
             /* Give min height to ensure top padding on all screen sizes */
             min-height: calc(100vh - 90px);
         }
+
         .about-main-section {
             background: linear-gradient(160deg, var(--section-bg) 50%, #fff);
             border-radius: 2rem;
@@ -42,6 +51,7 @@
             /* shadow gradient glow */
             box-shadow: 0 4px 32px #ef44441a;
         }
+
         .about-row {
             display: flex;
             flex-wrap: wrap;
@@ -49,6 +59,7 @@
             justify-content: space-between;
             margin-bottom: 2.7rem;
         }
+
         .about-card {
             flex: 1 1 400px;
             background: #fff;
@@ -58,20 +69,23 @@
             margin: 0 0 .7rem 0;
             min-width: 280px;
         }
+
         .about-card h3 {
             color: var(--fire-red-dark);
-            font-size:1.55rem;
-            font-family: Inter,sans-serif;
+            font-size: 1.55rem;
+            font-family: Inter, sans-serif;
             font-weight: 700;
             margin-bottom: .8em;
             letter-spacing: -.5px;
         }
+
         .about-card ul {
             color: var(--text-dark);
             margin-left: 1.5em;
-            font-size:1.09rem;
+            font-size: 1.09rem;
             line-height: 1.77;
         }
+
         /* Section split for two-column blocks */
         .section-split {
             display: flex;
@@ -79,39 +93,70 @@
             align-items: stretch;
             margin-bottom: 2.7rem;
             border-radius: 1.4rem;
-            background: linear-gradient(120deg,#fff,#fff6f6 80%);
+            background: linear-gradient(120deg, #fff, #fff6f6 80%);
             box-shadow: 0 4px 32px #ef444411;
             overflow: hidden;
         }
-        .section-split.reverse { flex-direction: row-reverse;background:linear-gradient(90deg,#ffeaea 60%,#fff);}
+
+        .section-split.reverse {
+            flex-direction: row-reverse;
+            background: linear-gradient(90deg, #ffeaea 60%, #fff);
+        }
+
         .section-split-img {
-            flex: 1 1 340px; min-width: 220px; max-width: 460px; display: flex; align-items: center; justify-content: center; background: none;
+            flex: 1 1 340px;
+            min-width: 220px;
+            max-width: 460px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
         }
+
         .section-split-img img {
-            width: 100%; object-fit: cover; border-radius: 0; height: 100%;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            height: 100%;
         }
+
         .section-split-content {
-            flex: 2 1 400px; min-width: 250px; 
+            flex: 2 1 400px;
+            min-width: 250px;
             padding: 2.4rem 2.2rem 2.3rem 2.2rem;
-            display: flex; flex-direction: column; justify-content: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
+
         .section-split-content h2 {
-            font-size:2.15rem;
+            font-size: 2.15rem;
             color: var(--fire-red-dark);
             font-weight: 800;
-            margin-bottom:.3em;
+            margin-bottom: .3em;
             letter-spacing: -.7px;
             text-shadow: 0 2px 8px #ef44441b;
         }
-        .section-split.reverse .section-split-content { color:#fff;}
-        .section-split.reverse{background:linear-gradient(90deg,#ef4444 70%,#fff);}
-        .section-split.reverse h2 {color: #fffbe9;}
+
+        .section-split.reverse .section-split-content {
+            color: #fff;
+        }
+
+        .section-split.reverse {
+            background: linear-gradient(90deg, #ef4444 70%, #fff);
+        }
+
+        .section-split.reverse h2 {
+            color: #fffbe9;
+        }
+
         .section-split-content p {
             color: var(--text-gray);
-            font-size:1.1rem;
+            font-size: 1.1rem;
             line-height: 1.66;
             margin-bottom: .7em;
         }
+
         .btn-viewall {
             background: var(--fire-red);
             color: #fff;
@@ -125,44 +170,106 @@
             transition: background 0.2s;
             box-shadow: 0 2px 10px #ef444425;
         }
-        .btn-viewall:hover { background: var(--fire-red-dark);}
+
+        .btn-viewall:hover {
+            background: var(--fire-red-dark);
+        }
+
         /* Officials block */
-        .officials-section {background: #fff1f1; border-radius: 1.2rem; margin: 2.2rem 0 2.0rem 0;}
-        .officials-grid {display: flex; gap: 2.5rem; flex-wrap: wrap; justify-content: center;}
+        .officials-section {
+            background: #fff1f1;
+            border-radius: 1.2rem;
+            margin: 2.2rem 0 2.0rem 0;
+        }
+
+        .officials-grid {
+            display: flex;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
         .official-card {
-            background:#fff;
-            border-radius:1.3rem;
-            box-shadow:0 2px 18px #ef444415;
-            text-align:center;
-            padding:2rem 1.2rem 1.5rem 1.2rem;
-            max-width:255px;
+            background: #fff;
+            border-radius: 1.3rem;
+            box-shadow: 0 2px 18px #ef444415;
+            text-align: center;
+            padding: 2rem 1.2rem 1.5rem 1.2rem;
+            max-width: 255px;
         }
+
         .official-photo {
-            border-radius:20%;width:125px;height:125px;object-fit:cover;
-            margin: 0 auto 1em auto;;}
-        .official-name { font-weight: 700; font-size: 1.13em; margin-bottom: .3em;}
-        .official-title { color: #64748b; font-size: .97em; line-height: 1.4;}
-        @media (max-width: 1024px) {
-            .about-row,.section-split,.officials-grid { flex-direction: column; gap:1.4em;}
-            .section-split-img,.section-split-content { min-width:0 !important; }
-            .section-split-img img { border-radius: 0 0 .9em .9em;}
+            border-radius: 20%;
+            width: 125px;
+            height: 125px;
+            object-fit: cover;
+            margin: 0 auto 1em auto;
+            ;
         }
-        @media (max-width:600px){
-            main {padding-top:110px !important;}
-            .container { padding:0 .6em;}
-            .about-main-section{padding:1em .6em;}
-            .about-card{padding:1.1em .7em;}
-            .section-split-content{padding:1.1em;}
+
+        .official-name {
+            font-weight: 700;
+            font-size: 1.13em;
+            margin-bottom: .3em;
+        }
+
+        .official-title {
+            color: #64748b;
+            font-size: .97em;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 1024px) {
+
+            .about-row,
+            .section-split,
+            .officials-grid {
+                flex-direction: column;
+                gap: 1.4em;
+            }
+
+            .section-split-img,
+            .section-split-content {
+                min-width: 0 !important;
+            }
+
+            .section-split-img img {
+                border-radius: 0 0 .9em .9em;
+            }
+        }
+
+        @media (max-width:600px) {
+            main {
+                padding-top: 110px !important;
+            }
+
+            .container {
+                padding: 0 .6em;
+            }
+
+            .about-main-section {
+                padding: 1em .6em;
+            }
+
+            .about-card {
+                padding: 1.1em .7em;
+            }
+
+            .section-split-content {
+                padding: 1.1em;
+            }
         }
     </style>
 </head>
+
 <body>
     <!-- Header -->
     <header class="header" id="header">
         <div class="container">
             <nav class="nav">
                 <a href="{% url 'index' %}" class="logo" style="display: flex; align-items: center;">
-                    <img src="{% static 'ui/images/logo.webp' %}" alt="Chengannur Fire Rescue Logo" style="height: 40px; vertical-align: middle; margin-right: 8px;" />
+                    <img src="{% static 'ui/images/logo.webp' %}" alt="Chengannur Fire Rescue Logo"
+                        style="height: 40px; vertical-align: middle; margin-right: 8px;" />
                     <span style="font-weight: 700; color: #ef4444; font-size: 1.3rem;">Chengannur Fire Rescue</span>
                 </a>
                 <div class="nav-menu" id="nav-menu">
@@ -189,18 +296,27 @@
                     <h3>Our Mission</h3>
                     <ul>
                         <li>To protect people’s life &amp; property from fire and other accidents.</li>
-                        <li>To protect our community from all possible hazards by providing progressive high quality emergency services and preventive measures.</li>
-                        <li>To carry out effective and timely fire fighting, rescue and life saving operations and Disaster Management activities and thereby ensure maximum performance and render remarkable service to the public.</li>
-                        <li>Develop well organized and trained Fire &amp; Rescue Services so that human resources of the department measure up to multiple challenges of a Fire &amp; Rescue Service.</li>
+                        <li>To protect our community from all possible hazards by providing progressive high quality
+                            emergency services and preventive measures.</li>
+                        <li>To carry out effective and timely fire fighting, rescue and life saving operations and
+                            Disaster Management activities and thereby ensure maximum performance and render remarkable
+                            service to the public.</li>
+                        <li>Develop well organized and trained Fire &amp; Rescue Services so that human resources of the
+                            department measure up to multiple challenges of a Fire &amp; Rescue Service.</li>
                     </ul>
                 </div>
                 <div class="about-card animate-slide-in-right">
                     <h3>Our Vision</h3>
                     <ul>
-                        <li>Dedicated and best community focused Fire &amp; Rescue Services ensuring a safe and secure environment for all.</li>
-                        <li>To honor the trust of the society by demonstrating commitment to deliver professional Fire Fighting &amp; Rescue Services activities with compassion, respect and utmost courtesy.</li>
-                        <li>To ensure community safety by creating basic awareness regarding fire safety, life safety and Disaster Management among the people and thereby mitigate the fire loss and improve effective and timely rescue and life saving activities.</li>
-                        <li>Minimize the response time in urban and rural areas by increasing the number of Fire &amp; Rescue Stations and mobility profile of the Department.</li>
+                        <li>Dedicated and best community focused Fire &amp; Rescue Services ensuring a safe and secure
+                            environment for all.</li>
+                        <li>To honor the trust of the society by demonstrating commitment to deliver professional Fire
+                            Fighting &amp; Rescue Services activities with compassion, respect and utmost courtesy.</li>
+                        <li>To ensure community safety by creating basic awareness regarding fire safety, life safety
+                            and Disaster Management among the people and thereby mitigate the fire loss and improve
+                            effective and timely rescue and life saving activities.</li>
+                        <li>Minimize the response time in urban and rural areas by increasing the number of Fire &amp;
+                            Rescue Stations and mobility profile of the Department.</li>
                     </ul>
                 </div>
             </div>
@@ -212,10 +328,17 @@
                 <div class="section-split-content">
                     <h2>KERALA CIVIL DEFENCE</h2>
                     <p>
-                        Civil Defense in Kerala has been constituted as per Government Order (MS) No.132 / 19 issued on 30.08.2019.<br />
-                        The Director General of the Kerala Fire &amp; Rescue Services is the head of the Home Guards and the Civil Defense. A Regional Fire Officer based at Thiruvananthapuram and District Fire Officers in the districts will coordinate the activities of the Civil Defense for the administration.
+                        Civil Defense in Kerala has been constituted as per Government Order (MS) No.132 / 19 issued on
+                        30.08.2019.<br />
+                        The Director General of the Kerala Fire &amp; Rescue Services is the head of the Home Guards and
+                        the Civil Defense. A Regional Fire Officer based at Thiruvananthapuram and District Fire
+                        Officers in the districts will coordinate the activities of the Civil Defense for the
+                        administration.
                     </p>
-                    <button class="btn-viewall">VIEW ALL</button>
+                    <button class="btn-viewall" onclick="window.open('https://fire.kerala.gov.in/en/home/', '_blank')">
+                        VIEW MORE
+                    </button>
+
                 </div>
             </div>
 
@@ -226,24 +349,32 @@
                 <div class="section-split-content">
                     <h2><span style="color:#fde047">Department Of</span><br />KERALA FIRE AND RESCUE SERVICES</h2>
                     <p>
-                        There were separate Fire services in Travancore, Cochin and Malabar States before the formation of Kerala State.
+                        There were separate Fire services in Travancore, Cochin and Malabar States before the formation
+                        of Kerala State.
                     </p>
                     <p>
-                        There were three fire stations in Travancore and Kochi and five fire stations in Malabar. These stations were under the control of Police Department. In 1949, the Fire Station of Travancore and Cochin states were joined together. In 1956, Malabar state was also included and thus the Kerala Fire Service came into being. From then onwards, the Inspector General of Police was the head of the Fire Service up to 1963. Fire services worked as part of the Police Department. As per the Government Notification No.9018/61, dated: 21.06.1962 Kerala Fire Force Act came into existence.
+                        There were three fire stations in Travancore and Kochi and five fire stations in Malabar. These
+                        stations were under the control of Police Department. In 1949, the Fire Station of Travancore
+                        and Cochin states were joined together. In 1956, Malabar state was also included and thus the
+                        Kerala Fire Service came into being. From then onwards, the Inspector General of Police was the
+                        head of the Fire Service up to 1963. Fire services worked as part of the Police Department. As
+                        per the Government Notification No.9018/61, dated: 21.06.1962 Kerala Fire Force Act came into
+                        existence.
                     </p>
-                    <button class="btn-viewall">VIEW ALL</button>
                 </div>
             </div>
 
             <div class="officials-section">
                 <div class="officials-grid">
                     <div class="official-card animate-fade-in">
-                        <img src="{% static 'ui/images/Pinarayi Vijayan.webp' %}" class="official-photo" alt="Chief Minister Kerala" />
+                        <img src="{% static 'ui/images/Pinarayi Vijayan.webp' %}" class="official-photo"
+                            alt="Chief Minister Kerala" />
                         <div class="official-name">Shri. PINARAYI VIJAYAN</div>
                         <div class="official-title">Hon'ble Chief Minister<br />Government of Kerala</div>
                     </div>
                     <div class="official-card animate-fade-in">
-                        <img src="{% static 'ui/images/Yogesh Gupta.webp' %}" class="official-photo" alt="Director General Kerala Fire and Rescue" />
+                        <img src="{% static 'ui/images/Yogesh Gupta.webp' %}" class="official-photo"
+                            alt="Director General Kerala Fire and Rescue" />
                         <div class="official-name">Shri. YOGESH GUPTA IPS</div>
                         <div class="official-title">Director General<br />Kerala Fire &amp; Rescue Services</div>
                     </div>
@@ -308,4 +439,5 @@
     <script src="{% static 'ui/js/components.js' %}"></script>
     <script src="{% static 'ui/js/main.js' %}"></script>
 </body>
+
 </html>
