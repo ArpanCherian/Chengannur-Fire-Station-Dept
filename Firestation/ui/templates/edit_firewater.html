@@ -340,19 +340,32 @@
                             <label>Nature of Incident</label>
                             <div>
         <label>
-            <input type="radio" name="nature_incident" value="rescue" {% if case.nature_incident == 'rescue' %}checked{% endif %}>
+            <input type="radio" name="nature_incident" value="Serious Call" {% if case.nature_incident == 'Serious Call' %}checked{% endif %}>
+            Serious Call
+        </label>
+        <label>
+            <input type="radio" name="nature_incident" value="Major Call" {% if case.nature_incident == 'Major Call' %}checked{% endif %}>
+            Major Call
+        </label>
+        <label>
+            <input type="radio" name="nature_incident" value="Medium Call" {% if case.nature_incident == 'Medium Call' %}checked{% endif %}>
+            Medium Call
+        </label>
+        <label>
+            <input type="radio" name="nature_incident" value="Minor Call" {% if case.nature_incident == 'Minor Call' %}checked{% endif %}>
+            Minor Call
+        </label>
+
+        <label>
+            <input type="radio" name="nature_incident" value="Rescue" {% if case.nature_incident == 'Rescue' %}checked{% endif %}>
             Rescue
         </label>
         <label>
-            <input type="radio" name="nature_incident" value="accident" {% if case.nature_incident == 'accident' %}checked{% endif %}>
+            <input type="radio" name="nature_incident" value="Accident" {% if case.nature_incident == 'Accident' %}checked{% endif %}>
             Accident
         </label>
         <label>
-            <input type="radio" name="nature_incident" value="hazardous" {% if case.nature_incident == 'hazardous' %}checked{% endif %}>
-            Hazardous
-        </label>
-        <label>
-            <input type="radio" name="nature_incident" value="other" {% if case.nature_incident == 'other' %}checked{% endif %}>
+            <input type="radio" name="nature_incident" value="Other" {% if case.nature_incident == 'Other' %}checked{% endif %}>
             Other
         </label>
     </div>
