@@ -242,7 +242,6 @@ def firewater_report(request):
             property_removed = data.get('property_removed'),
             property_saved = data.get('property_saved'),
             property_lost = data.get('property_lost'),
-            approximate_loss = data.get('approximate_loss'),
             building_damage = data.get('building_damage'),
             items_destroyed = data.get('items_destroyed'),
             major_loss_cause = data.get('major_loss_cause')
@@ -303,7 +302,6 @@ def adminfirewater_report(request):
             property_removed = data.get('property_removed'),
             property_saved = data.get('property_saved'),
             property_lost = data.get('property_lost'),
-            approximate_loss = data.get('approximate_loss'),
             building_damage = data.get('building_damage'),
             items_destroyed = data.get('items_destroyed'),
             major_loss_cause = data.get('major_loss_cause')
@@ -362,7 +360,6 @@ def generalincident_report(request):
             property_removed = data.get('property_removed'),
             property_saved = data.get('property_saved'),
             property_lost = data.get('property_lost'),
-            approximate_loss = data.get('approximate_loss'),
             building_damage = data.get('building_damage'),
             items_destroyed = data.get('items_destroyed'),
             major_loss_cause = data.get('major_loss_cause')
@@ -421,7 +418,6 @@ def admingeneralincident_report(request):
             property_removed = data.get('property_removed'),
             property_saved = data.get('property_saved'),
             property_lost = data.get('property_lost'),
-            approximate_loss = data.get('approximate_loss'),
             building_damage = data.get('building_damage'),
             items_destroyed = data.get('items_destroyed'),
             major_loss_cause = data.get('major_loss_cause')
@@ -738,7 +734,6 @@ def download_reports(request):
         "Property Removed",
         "Property Saved",
         "Property Lost",
-        "Approximate Loss (₹)",
         "Building Damage",
         "Items Destroyed",
         "Cause of Major Loss",
@@ -799,7 +794,6 @@ def download_reports(request):
             getattr(obj, 'property_removed', 'N/A'),
             getattr(obj, 'property_saved', 'N/A'),
             getattr(obj, 'property_lost', 'N/A'),
-            getattr(obj, 'approximate_loss', 'N/A'),
             getattr(obj, 'building_damage', 'N/A'),
             getattr(obj, 'items_destroyed', 'N/A'),
             getattr(obj, 'major_loss_cause', 'N/A'),
@@ -857,7 +851,6 @@ def download_reports(request):
             getattr(obj, 'property_removed', 'N/A'),
             getattr(obj, 'property_saved', 'N/A'),
             getattr(obj, 'property_lost', 'N/A'),
-            getattr(obj, 'approximate_loss', 'N/A'),
             getattr(obj, 'building_damage', 'N/A'),
             getattr(obj, 'items_destroyed', 'N/A'),
             getattr(obj, 'major_loss_cause', 'N/A'),
@@ -915,7 +908,6 @@ def download_reports(request):
             '',  # Property Removed
             '',  # Property Saved
             '',  # Property Lost
-            '',  # Approximate Loss
             '',  # Building Damage
             '',  # Items Destroyed
             '',  # Cause of Major Loss
@@ -1022,6 +1014,28 @@ def adminanalytics(request):
     # 13. Animals lost - sum from firewater and generalIncident
     animals_lost = (sum([int(c.animals_lost or 0) for c in q_fire]) +
                     sum([int(c.animals_lost or 0) for c in q_general]))
+    
+    # property saved and lost
+    fireproperty_saved = sum([
+        int(c.property_saved or 0)
+        for c in q_fire if c.incident == 'Fire'
+    ])
+
+    waterproperty_saved = sum([
+        int(c.property_saved or 0)
+        for c in q_fire if c.incident == 'Water'
+    ])
+
+    fireproperty_lost = sum([
+        int(c.property_lost or 0)
+        for c in q_fire if c.incident == 'Fire'
+    ])
+
+    waterproperty_lost = sum([
+        int(c.property_lost or 0)
+        for c in q_fire if c.incident == 'Water'
+    ])
+
 
     # 14. Humans rescued - sum of rescued_male and rescued_female from both models
     human_rescued = (
@@ -1068,6 +1082,10 @@ def adminanalytics(request):
         'animal_calls': animal_calls,
         'animals_rescued': animals_rescued,
         'animals_lost': animals_lost,
+        'fireproperty_saved': fireproperty_saved,
+        'waterproperty_saved': waterproperty_saved, 
+        'fireproperty_lost': fireproperty_lost,
+        'waterproperty_lost': waterproperty_lost,
         'human_rescued': human_rescued,
         'human_lost': human_lost,
         'water_deaths_male': water_deaths_male,
