@@ -654,6 +654,13 @@ def delete_case(request, model_type, case_id):
 
 
 
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from datetime import datetime
+from django.http import HttpResponse
+from django.shortcuts import redirect
+
 def download_reports(request):
     if 'username' not in request.session:
         return redirect('admin_login')
@@ -667,6 +674,7 @@ def download_reports(request):
     start = request.GET.get('start_date')
     end = request.GET.get('end_date')
     
+    # Apply filters
     if month:
         y, m = month.split('-')
         qs_fire = [c for c in qs_fire if c.form_date.year == int(y) and c.form_date.month == int(m)]
@@ -685,247 +693,433 @@ def download_reports(request):
         qs_general = [c for c in qs_general if c.form_date <= end_date]
         qs_assist = [c for c in qs_assist if c.form_date <= end_date]
 
-    # Define comprehensive header
-    header = [
-        "Report Type",
-        "Date of Filling the Form",
-        "Name of the User",
-        "Incident/Type",
-        "Call Number",
-        "Call Received",
-        "Time Left Station",
-        "Time Reached Scene",
-        "Time Returned",
-        "Occupancy Type",
-        "Construction Type",
-        "Owner / Occupant",
-        "Electrical / Gas / Chemicals",
-        "Hazardous Materials",
-        "Weather Conditions",
-        "Caller (Name & Contact)",
-        "Source of Call",
-        "Nature of Incident",
-        "Exact Location",
-        "Owner / Occupant Details",
-        "Premises Occupancy Type",
-        "Building Details",
-        "Premises Electrical / Gas / Chemicals",
-        "Premises Hazardous Materials",
-        "Deaths Male",
-        "Deaths Female",
-        "Deaths Adult (Above 18)",
-        "Deaths Child (Below 18)",
-        "Injuries Male",
-        "Injuries Female",
-        "Injuries Adult (Above 18)",
-        "Injuries Child (Below 18)",
-        "Rescued Male",
-        "Rescued Female",
-        "Rescued Adult (Above 18)",
-        "Rescued Child (Below 18)",
-        "Fire Personnel Injuries",
-        "Animals Rescued",
-        "Animals Lost",
-        "Hospital / Doctor",
-        "Ambulance / Police Notified Time",
-        "Appliances & Crews Attended",
-        "Officer In Charge",
-        "Equipment Used",
-        "Property Removed",
-        "Property Saved",
-        "Property Lost",
-        "Building Damage",
-        "Items Destroyed",
-        "Cause of Major Loss",
-        "Assistance Details",
-        "Injured (GeneralIncident)",
-    ]
-
-    # Build all reports with complete data
+    # Create workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Incident Reports"
+    
+    # Define styles
+    title_font = Font(name='Arial', size=18, bold=True, color='FFFFFF')
+    title_fill = PatternFill(start_color='1F4E78', end_color='1F4E78', fill_type='solid')
+    
+    section_font = Font(name='Arial', size=13, bold=True, color='FFFFFF')
+    section_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
+    
+    header_font = Font(name='Arial', size=11, bold=True, color='FFFFFF')
+    header_fill = PatternFill(start_color='5B9BD5', end_color='5B9BD5', fill_type='solid')
+    
+    label_font = Font(name='Arial', size=10, bold=True)
+    label_fill = PatternFill(start_color='D9E2F3', end_color='D9E2F3', fill_type='solid')
+    
+    data_font = Font(name='Arial', size=10)
+    
+    center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    left_alignment = Alignment(horizontal='left', vertical='center', wrap_text=True)
+    
+    thin_border = Border(
+        left=Side(style='thin', color='000000'),
+        right=Side(style='thin', color='000000'),
+        top=Side(style='thin', color='000000'),
+        bottom=Side(style='thin', color='000000')
+    )
+    
+    # Row counter
+    current_row = 1
+    
+    # Main Title
+    ws.merge_cells(f'A{current_row}:F{current_row}')
+    title_cell = ws[f'A{current_row}']
+    title_cell.value = 'FIRE & RESCUE SERVICES - INCIDENT REPORTS'
+    title_cell.font = title_font
+    title_cell.fill = title_fill
+    title_cell.alignment = center_alignment
+    title_cell.border = thin_border
+    ws.row_dimensions[current_row].height = 35
+    current_row += 1
+    
+    # Report Details
+    ws.merge_cells(f'A{current_row}:C{current_row}')
+    report_info = ws[f'A{current_row}']
+    report_info.value = f'Report Generated: {datetime.now().strftime("%d-%m-%Y %H:%M:%S")}'
+    report_info.font = Font(name='Arial', size=10, italic=True)
+    report_info.alignment = left_alignment
+    report_info.border = thin_border
+    
+    if month:
+        ws.merge_cells(f'D{current_row}:F{current_row}')
+        period_cell = ws[f'D{current_row}']
+        period_cell.value = f'Period: {month}'
+        period_cell.font = Font(name='Arial', size=10, italic=True)
+        period_cell.alignment = Alignment(horizontal='right', vertical='center')
+        period_cell.border = thin_border
+    elif start and end:
+        ws.merge_cells(f'D{current_row}:F{current_row}')
+        period_cell = ws[f'D{current_row}']
+        period_cell.value = f'Period: {start} to {end}'
+        period_cell.font = Font(name='Arial', size=10, italic=True)
+        period_cell.alignment = Alignment(horizontal='right', vertical='center')
+        period_cell.border = thin_border
+    else:
+        ws.merge_cells(f'D{current_row}:F{current_row}')
+        period_cell = ws[f'D{current_row}']
+        period_cell.value = 'Period: All Records'
+        period_cell.font = Font(name='Arial', size=10, italic=True)
+        period_cell.alignment = Alignment(horizontal='right', vertical='center')
+        period_cell.border = thin_border
+    
+    ws.row_dimensions[current_row].height = 20
+    current_row += 2
+    
+    # Prepare all data
     all_reports = []
     
-    # Add firewater reports
+    # Process firewater reports
     for obj in qs_fire:
-        all_reports.append([
-            "Firewater",
-            obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
-            obj.userName,
-            getattr(obj, 'incident', 'N/A'),
-            getattr(obj, 'call_number', 'N/A'),
-            getattr(obj, 'call_received', 'N/A'),
-            getattr(obj, 'time_left_station', 'N/A'),
-            getattr(obj, 'time_reached_scene', 'N/A'),
-            getattr(obj, 'time_returned', 'N/A'),
-            getattr(obj, 'occupancy_type', 'N/A'),
-            getattr(obj, 'construction_type', 'N/A'),
-            getattr(obj, 'owner_details', 'N/A'),
-            getattr(obj, 'electrical_chemicals', 'N/A'),
-            getattr(obj, 'hazardous_materials', 'N/A'),
-            getattr(obj, 'weather_conditions', 'N/A'),
-            getattr(obj, 'caller_contact', 'N/A'),
-            getattr(obj, 'source_of_call', 'N/A'),
-            getattr(obj, 'nature_incident', 'N/A'),
-            getattr(obj, 'exact_location', 'N/A'),
-            getattr(obj, 'owner_occupant', 'N/A'),
-            getattr(obj, 'premises_occupancy', 'N/A'),
-            getattr(obj, 'building_details', 'N/A'),
-            getattr(obj, 'premises_chemicals', 'N/A'),
-            getattr(obj, 'premises_hazardous', 'N/A'),
-            getattr(obj, 'deaths_male', 'N/A'),
-            getattr(obj, 'deaths_female', 'N/A'),
-            getattr(obj, 'deaths_adult', 'N/A'),
-            getattr(obj, 'deaths_child', 'N/A'),
-            getattr(obj, 'injuries_male', 'N/A'),
-            getattr(obj, 'injuries_female', 'N/A'),
-            getattr(obj, 'injuries_adult', 'N/A'),
-            getattr(obj, 'injuries_child', 'N/A'),
-            getattr(obj, 'rescued_male', 'N/A'),
-            getattr(obj, 'rescued_female', 'N/A'),
-            getattr(obj, 'rescued_adult', 'N/A'),
-            getattr(obj, 'rescued_child', 'N/A'),
-            getattr(obj, 'fire_personnel_injuries', 'N/A'),
-            getattr(obj, 'animals_rescued', 'N/A'),
-            getattr(obj, 'animals_lost', 'N/A'),
-            getattr(obj, 'hospital_doctor', 'N/A'),
-            getattr(obj, 'ambulance_notified', 'N/A'),
-            getattr(obj, 'appliances_crews', 'N/A'),
-            getattr(obj, 'officer_in_charge', 'N/A'),
-            getattr(obj, 'equipment_used', 'N/A'),
-            getattr(obj, 'property_removed', 'N/A'),
-            getattr(obj, 'property_saved', 'N/A'),
-            getattr(obj, 'property_lost', 'N/A'),
-            getattr(obj, 'building_damage', 'N/A'),
-            getattr(obj, 'items_destroyed', 'N/A'),
-            getattr(obj, 'major_loss_cause', 'N/A'),
-            '',  # Assistance Details (not applicable)
-            '',  # Injured GeneralIncident (not applicable)
-        ])
+        all_reports.append({
+            'type': 'Firewater',
+            'date': obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
+            'sort_date': obj.form_date if obj.form_date else datetime.min.date(),
+            'data': {
+                'userName': obj.userName,
+                'incident': getattr(obj, 'incident', 'N/A'),
+                'call_number': getattr(obj, 'call_number', 'N/A'),
+                'call_received': getattr(obj, 'call_received', 'N/A'),
+                'time_left_station': getattr(obj, 'time_left_station', 'N/A'),
+                'time_reached_scene': getattr(obj, 'time_reached_scene', 'N/A'),
+                'time_returned': getattr(obj, 'time_returned', 'N/A'),
+                'occupancy_type': getattr(obj, 'occupancy_type', 'N/A'),
+                'construction_type': getattr(obj, 'construction_type', 'N/A'),
+                'owner_details': getattr(obj, 'owner_details', 'N/A'),
+                'electrical_chemicals': getattr(obj, 'electrical_chemicals', 'N/A'),
+                'hazardous_materials': getattr(obj, 'hazardous_materials', 'N/A'),
+                'weather_conditions': getattr(obj, 'weather_conditions', 'N/A'),
+                'caller_contact': getattr(obj, 'caller_contact', 'N/A'),
+                'source_of_call': getattr(obj, 'source_of_call', 'N/A'),
+                'nature_incident': getattr(obj, 'nature_incident', 'N/A'),
+                'exact_location': getattr(obj, 'exact_location', 'N/A'),
+                'owner_occupant': getattr(obj, 'owner_occupant', 'N/A'),
+                'premises_occupancy': getattr(obj, 'premises_occupancy', 'N/A'),
+                'building_details': getattr(obj, 'building_details', 'N/A'),
+                'premises_chemicals': getattr(obj, 'premises_chemicals', 'N/A'),
+                'premises_hazardous': getattr(obj, 'premises_hazardous', 'N/A'),
+                'deaths_male': getattr(obj, 'deaths_male', 'N/A'),
+                'deaths_female': getattr(obj, 'deaths_female', 'N/A'),
+                'deaths_adult': getattr(obj, 'deaths_adult', 'N/A'),
+                'deaths_child': getattr(obj, 'deaths_child', 'N/A'),
+                'injuries_male': getattr(obj, 'injuries_male', 'N/A'),
+                'injuries_female': getattr(obj, 'injuries_female', 'N/A'),
+                'injuries_adult': getattr(obj, 'injuries_adult', 'N/A'),
+                'injuries_child': getattr(obj, 'injuries_child', 'N/A'),
+                'rescued_male': getattr(obj, 'rescued_male', 'N/A'),
+                'rescued_female': getattr(obj, 'rescued_female', 'N/A'),
+                'rescued_adult': getattr(obj, 'rescued_adult', 'N/A'),
+                'rescued_child': getattr(obj, 'rescued_child', 'N/A'),
+                'fire_personnel_injuries': getattr(obj, 'fire_personnel_injuries', 'N/A'),
+                'animals_rescued': getattr(obj, 'animals_rescued', 'N/A'),
+                'animals_lost': getattr(obj, 'animals_lost', 'N/A'),
+                'hospital_doctor': getattr(obj, 'hospital_doctor', 'N/A'),
+                'ambulance_notified': getattr(obj, 'ambulance_notified', 'N/A'),
+                'appliances_crews': getattr(obj, 'appliances_crews', 'N/A'),
+                'officer_in_charge': getattr(obj, 'officer_in_charge', 'N/A'),
+                'equipment_used': getattr(obj, 'equipment_used', 'N/A'),
+                'property_removed': getattr(obj, 'property_removed', 'N/A'),
+                'property_saved': getattr(obj, 'property_saved', 'N/A'),
+                'property_lost': getattr(obj, 'property_lost', 'N/A'),
+                'building_damage': getattr(obj, 'building_damage', 'N/A'),
+                'items_destroyed': getattr(obj, 'items_destroyed', 'N/A'),
+                'major_loss_cause': getattr(obj, 'major_loss_cause', 'N/A'),
+                'assistance_details': '',
+                'injured': ''
+            }
+        })
     
-    # Add general incident reports
+    # Process general incidents
     for obj in qs_general:
-        all_reports.append([
-            "GeneralIncident",
-            obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
-            obj.userName,
-            getattr(obj, 'incident', 'N/A'),
-            getattr(obj, 'call_number', 'N/A'),
-            getattr(obj, 'call_received', 'N/A'),
-            getattr(obj, 'time_left_station', 'N/A'),
-            getattr(obj, 'time_reached_scene', 'N/A'),
-            getattr(obj, 'time_returned', 'N/A'),
-            getattr(obj, 'occupancy_type', 'N/A'),
-            getattr(obj, 'construction_type', 'N/A'),
-            getattr(obj, 'owner_details', 'N/A'),
-            getattr(obj, 'electrical_chemicals', 'N/A'),
-            getattr(obj, 'hazardous_materials', 'N/A'),
-            getattr(obj, 'weather_conditions', 'N/A'),
-            getattr(obj, 'caller_contact', 'N/A'),
-            getattr(obj, 'source_of_call', 'N/A'),
-            getattr(obj, 'nature_incident', 'N/A'),
-            getattr(obj, 'exact_location', 'N/A'),
-            getattr(obj, 'owner_occupant', 'N/A'),
-            getattr(obj, 'premises_occupancy', 'N/A'),
-            getattr(obj, 'building_details', 'N/A'),
-            getattr(obj, 'premises_chemicals', 'N/A'),
-            getattr(obj, 'premises_hazardous', 'N/A'),
-            getattr(obj, 'deaths_male', 'N/A'),
-            getattr(obj, 'deaths_female', 'N/A'),
-            getattr(obj, 'deaths_adult', 'N/A'),
-            getattr(obj, 'deaths_child', 'N/A'),
-            '',  # Injuries male (not in GeneralIncident)
-            '',  # Injuries female
-            '',  # Injuries adult
-            '',  # Injuries child
-            getattr(obj, 'rescued_male', 'N/A'),
-            getattr(obj, 'rescued_female', 'N/A'),
-            getattr(obj, 'rescued_adult', 'N/A'),
-            getattr(obj, 'rescued_child', 'N/A'),
-            getattr(obj, 'fire_personnel_injuries', 'N/A'),
-            getattr(obj, 'animals_rescued', 'N/A'),
-            getattr(obj, 'animals_lost', 'N/A'),
-            getattr(obj, 'hospital_doctor', 'N/A'),
-            getattr(obj, 'ambulance_notified', 'N/A'),
-            getattr(obj, 'appliances_crews', 'N/A'),
-            getattr(obj, 'officer_in_charge', 'N/A'),
-            getattr(obj, 'equipment_used', 'N/A'),
-            getattr(obj, 'property_removed', 'N/A'),
-            getattr(obj, 'property_saved', 'N/A'),
-            getattr(obj, 'property_lost', 'N/A'),
-            getattr(obj, 'building_damage', 'N/A'),
-            getattr(obj, 'items_destroyed', 'N/A'),
-            getattr(obj, 'major_loss_cause', 'N/A'),
-            '',  # Assistance Details (not applicable)
-            getattr(obj, 'injured', 'N/A'),  # GeneralIncident specific field
-        ])
+        all_reports.append({
+            'type': 'General Incident',
+            'date': obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
+            'sort_date': obj.form_date if obj.form_date else datetime.min.date(),
+            'data': {
+                'userName': obj.userName,
+                'incident': getattr(obj, 'incident', 'N/A'),
+                'call_number': getattr(obj, 'call_number', 'N/A'),
+                'call_received': getattr(obj, 'call_received', 'N/A'),
+                'time_left_station': getattr(obj, 'time_left_station', 'N/A'),
+                'time_reached_scene': getattr(obj, 'time_reached_scene', 'N/A'),
+                'time_returned': getattr(obj, 'time_returned', 'N/A'),
+                'occupancy_type': getattr(obj, 'occupancy_type', 'N/A'),
+                'construction_type': getattr(obj, 'construction_type', 'N/A'),
+                'owner_details': getattr(obj, 'owner_details', 'N/A'),
+                'electrical_chemicals': getattr(obj, 'electrical_chemicals', 'N/A'),
+                'hazardous_materials': getattr(obj, 'hazardous_materials', 'N/A'),
+                'weather_conditions': getattr(obj, 'weather_conditions', 'N/A'),
+                'caller_contact': getattr(obj, 'caller_contact', 'N/A'),
+                'source_of_call': getattr(obj, 'source_of_call', 'N/A'),
+                'nature_incident': getattr(obj, 'nature_incident', 'N/A'),
+                'exact_location': getattr(obj, 'exact_location', 'N/A'),
+                'owner_occupant': getattr(obj, 'owner_occupant', 'N/A'),
+                'premises_occupancy': getattr(obj, 'premises_occupancy', 'N/A'),
+                'building_details': getattr(obj, 'building_details', 'N/A'),
+                'premises_chemicals': getattr(obj, 'premises_chemicals', 'N/A'),
+                'premises_hazardous': getattr(obj, 'premises_hazardous', 'N/A'),
+                'deaths_male': getattr(obj, 'deaths_male', 'N/A'),
+                'deaths_female': getattr(obj, 'deaths_female', 'N/A'),
+                'deaths_adult': getattr(obj, 'deaths_adult', 'N/A'),
+                'deaths_child': getattr(obj, 'deaths_child', 'N/A'),
+                'injuries_male': '',
+                'injuries_female': '',
+                'injuries_adult': '',
+                'injuries_child': '',
+                'rescued_male': getattr(obj, 'rescued_male', 'N/A'),
+                'rescued_female': getattr(obj, 'rescued_female', 'N/A'),
+                'rescued_adult': getattr(obj, 'rescued_adult', 'N/A'),
+                'rescued_child': getattr(obj, 'rescued_child', 'N/A'),
+                'fire_personnel_injuries': getattr(obj, 'fire_personnel_injuries', 'N/A'),
+                'animals_rescued': getattr(obj, 'animals_rescued', 'N/A'),
+                'animals_lost': getattr(obj, 'animals_lost', 'N/A'),
+                'hospital_doctor': getattr(obj, 'hospital_doctor', 'N/A'),
+                'ambulance_notified': getattr(obj, 'ambulance_notified', 'N/A'),
+                'appliances_crews': getattr(obj, 'appliances_crews', 'N/A'),
+                'officer_in_charge': getattr(obj, 'officer_in_charge', 'N/A'),
+                'equipment_used': getattr(obj, 'equipment_used', 'N/A'),
+                'property_removed': getattr(obj, 'property_removed', 'N/A'),
+                'property_saved': getattr(obj, 'property_saved', 'N/A'),
+                'property_lost': getattr(obj, 'property_lost', 'N/A'),
+                'building_damage': getattr(obj, 'building_damage', 'N/A'),
+                'items_destroyed': getattr(obj, 'items_destroyed', 'N/A'),
+                'major_loss_cause': getattr(obj, 'major_loss_cause', 'N/A'),
+                'assistance_details': '',
+                'injured': getattr(obj, 'injured', 'N/A')
+            }
+        })
     
-    # Add assistance call reports
+    # Process assistance calls
     for obj in qs_assist:
-        all_reports.append([
-            "AssistanceCall",
-            obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
-            obj.userName,
-            getattr(obj, 'incident_type', 'N/A'),
-            getattr(obj, 'call_number', 'N/A'),
-            getattr(obj, 'call_received', 'N/A'),
-            getattr(obj, 'time_left_station', 'N/A'),
-            getattr(obj, 'time_reached_scene', 'N/A'),
-            getattr(obj, 'time_returned', 'N/A'),
-            '',  # Occupancy Type (not in AssistanceCall)
-            '',  # Construction Type
-            '',  # Owner / Occupant
-            getattr(obj, 'electrical_chemicals', 'N/A'),
-            getattr(obj, 'hazardous_materials', 'N/A'),
-            getattr(obj, 'weather_conditions', 'N/A'),
-            getattr(obj, 'caller_contact', 'N/A'),
-            getattr(obj, 'source_of_call', 'N/A'),
-            '',  # Nature of Incident
-            getattr(obj, 'exact_location', 'N/A'),
-            '',  # Owner / Occupant Details
-            '',  # Premises Occupancy Type
-            '',  # Building Details
-            '',  # Premises Electrical / Gas / Chemicals
-            '',  # Premises Hazardous Materials
-            '',  # Deaths Male
-            '',  # Deaths Female
-            '',  # Deaths Adult
-            '',  # Deaths Child
-            '',  # Injuries Male
-            '',  # Injuries Female
-            '',  # Injuries Adult
-            '',  # Injuries Child
-            '',  # Rescued Male
-            '',  # Rescued Female
-            '',  # Rescued Adult
-            '',  # Rescued Child
-            '',  # Fire Personnel Injuries
-            '',  # Animals Rescued
-            '',  # Animals Lost
-            '',  # Hospital / Doctor
-            '',  # Ambulance / Police Notified Time
-            '',  # Appliances & Crews Attended
-            '',  # Officer In Charge
-            '',  # Equipment Used
-            '',  # Property Removed
-            '',  # Property Saved
-            '',  # Property Lost
-            '',  # Building Damage
-            '',  # Items Destroyed
-            '',  # Cause of Major Loss
-            getattr(obj, 'assistance_details', 'N/A'),
-            '',  # Injured (GeneralIncident only)
-        ])
+        all_reports.append({
+            'type': 'Assistance Call',
+            'date': obj.form_date.strftime('%d-%m-%Y') if obj.form_date else 'N/A',
+            'sort_date': obj.form_date if obj.form_date else datetime.min.date(),
+            'data': {
+                'userName': obj.userName,
+                'incident': getattr(obj, 'incident_type', 'N/A'),
+                'call_number': getattr(obj, 'call_number', 'N/A'),
+                'call_received': getattr(obj, 'call_received', 'N/A'),
+                'time_left_station': getattr(obj, 'time_left_station', 'N/A'),
+                'time_reached_scene': getattr(obj, 'time_reached_scene', 'N/A'),
+                'time_returned': getattr(obj, 'time_returned', 'N/A'),
+                'occupancy_type': '',
+                'construction_type': '',
+                'owner_details': '',
+                'electrical_chemicals': getattr(obj, 'electrical_chemicals', 'N/A'),
+                'hazardous_materials': getattr(obj, 'hazardous_materials', 'N/A'),
+                'weather_conditions': getattr(obj, 'weather_conditions', 'N/A'),
+                'caller_contact': getattr(obj, 'caller_contact', 'N/A'),
+                'source_of_call': getattr(obj, 'source_of_call', 'N/A'),
+                'nature_incident': '',
+                'exact_location': getattr(obj, 'exact_location', 'N/A'),
+                'owner_occupant': '',
+                'premises_occupancy': '',
+                'building_details': '',
+                'premises_chemicals': '',
+                'premises_hazardous': '',
+                'deaths_male': '',
+                'deaths_female': '',
+                'deaths_adult': '',
+                'deaths_child': '',
+                'injuries_male': '',
+                'injuries_female': '',
+                'injuries_adult': '',
+                'injuries_child': '',
+                'rescued_male': '',
+                'rescued_female': '',
+                'rescued_adult': '',
+                'rescued_child': '',
+                'fire_personnel_injuries': '',
+                'animals_rescued': '',
+                'animals_lost': '',
+                'hospital_doctor': '',
+                'ambulance_notified': '',
+                'appliances_crews': '',
+                'officer_in_charge': '',
+                'equipment_used': '',
+                'property_removed': '',
+                'property_saved': '',
+                'property_lost': '',
+                'building_damage': '',
+                'items_destroyed': '',
+                'major_loss_cause': '',
+                'assistance_details': getattr(obj, 'assistance_details', 'N/A'),
+                'injured': ''
+            }
+        })
     
     # Sort by date (most recent first)
-    all_reports = sorted(all_reports, key=lambda c: c[1], reverse=True)
-
-    # Create CSV response
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Monthly_reports.csv"'
+    all_reports = sorted(all_reports, key=lambda x: x['sort_date'], reverse=True)
     
-    writer = csv.writer(response)
-    writer.writerow(header)
-    writer.writerows(all_reports)
+    # Helper function to add labeled row
+    def add_labeled_row(label, value, col_offset=0):
+        nonlocal current_row
+        label_col = get_column_letter(1 + col_offset)
+        value_col = get_column_letter(2 + col_offset)
+        
+        label_cell = ws[f'{label_col}{current_row}']
+        label_cell.value = label
+        label_cell.font = label_font
+        label_cell.fill = label_fill
+        label_cell.alignment = left_alignment
+        label_cell.border = thin_border
+        
+        value_cell = ws[f'{value_col}{current_row}']
+        value_cell.value = value if value else 'N/A'
+        value_cell.font = data_font
+        value_cell.alignment = left_alignment
+        value_cell.border = thin_border
+        
+        current_row += 1
     
+    # Helper function to add section header
+    def add_section_header(title):
+        nonlocal current_row
+        ws.merge_cells(f'A{current_row}:F{current_row}')
+        header_cell = ws[f'A{current_row}']
+        header_cell.value = title
+        header_cell.font = header_font
+        header_cell.fill = header_fill
+        header_cell.alignment = center_alignment
+        header_cell.border = thin_border
+        ws.row_dimensions[current_row].height = 22
+        current_row += 1
+    
+    # Write each report
+    for report in all_reports:
+        # Report separator with type and date
+        ws.merge_cells(f'A{current_row}:F{current_row}')
+        sep_cell = ws[f'A{current_row}']
+        sep_cell.value = f"━━━ {report['type'].upper()} - {report['date']} ━━━"
+        sep_cell.font = section_font
+        sep_cell.fill = section_fill
+        sep_cell.alignment = center_alignment
+        sep_cell.border = thin_border
+        ws.row_dimensions[current_row].height = 28
+        current_row += 1
+        
+        # BASIC INFORMATION SECTION
+        add_section_header('BASIC INFORMATION')
+        add_labeled_row('Report Type', report['type'])
+        add_labeled_row('Date of Filling the Form', report['date'])
+        add_labeled_row('Name of the User', report['data']['userName'])
+        add_labeled_row('Incident/Type', report['data']['incident'])
+        add_labeled_row('Call Number', report['data']['call_number'])
+        current_row += 1
+        
+        # TIMING DETAILS SECTION
+        add_section_header('TIMING DETAILS')
+        add_labeled_row('Call Received', report['data']['call_received'])
+        add_labeled_row('Time Left Station', report['data']['time_left_station'])
+        add_labeled_row('Time Reached Scene', report['data']['time_reached_scene'])
+        add_labeled_row('Time Returned', report['data']['time_returned'])
+        current_row += 1
+        
+        # LOCATION & PREMISES SECTION
+        add_section_header('LOCATION & PREMISES INFORMATION')
+        add_labeled_row('Exact Location', report['data']['exact_location'])
+        add_labeled_row('Occupancy Type', report['data']['occupancy_type'])
+        add_labeled_row('Construction Type', report['data']['construction_type'])
+        add_labeled_row('Owner / Occupant', report['data']['owner_details'])
+        add_labeled_row('Owner / Occupant Details', report['data']['owner_occupant'])
+        add_labeled_row('Premises Occupancy Type', report['data']['premises_occupancy'])
+        add_labeled_row('Building Details', report['data']['building_details'])
+        current_row += 1
+        
+        # HAZARD INFORMATION SECTION
+        add_section_header('HAZARD INFORMATION')
+        add_labeled_row('Electrical / Gas / Chemicals', report['data']['electrical_chemicals'])
+        add_labeled_row('Hazardous Materials', report['data']['hazardous_materials'])
+        add_labeled_row('Premises Electrical / Gas / Chemicals', report['data']['premises_chemicals'])
+        add_labeled_row('Premises Hazardous Materials', report['data']['premises_hazardous'])
+        add_labeled_row('Weather Conditions', report['data']['weather_conditions'])
+        current_row += 1
+        
+        # CALL INFORMATION SECTION
+        add_section_header('CALL INFORMATION')
+        add_labeled_row('Caller (Name & Contact)', report['data']['caller_contact'])
+        add_labeled_row('Source of Call', report['data']['source_of_call'])
+        add_labeled_row('Nature of Incident', report['data']['nature_incident'])
+        current_row += 1
+        
+        # CASUALTIES SECTION
+        add_section_header('CASUALTIES & INJURIES')
+        add_labeled_row('Deaths Male', report['data']['deaths_male'])
+        add_labeled_row('Deaths Female', report['data']['deaths_female'])
+        add_labeled_row('Deaths Adult (Above 18)', report['data']['deaths_adult'])
+        add_labeled_row('Deaths Child (Below 18)', report['data']['deaths_child'])
+        add_labeled_row('Injuries Male', report['data']['injuries_male'])
+        add_labeled_row('Injuries Female', report['data']['injuries_female'])
+        add_labeled_row('Injuries Adult (Above 18)', report['data']['injuries_adult'])
+        add_labeled_row('Injuries Child (Below 18)', report['data']['injuries_child'])
+        add_labeled_row('Injured (GeneralIncident)', report['data']['injured'])
+        current_row += 1
+        
+        # RESCUE INFORMATION SECTION
+        add_section_header('RESCUE INFORMATION')
+        add_labeled_row('Rescued Male', report['data']['rescued_male'])
+        add_labeled_row('Rescued Female', report['data']['rescued_female'])
+        add_labeled_row('Rescued Adult (Above 18)', report['data']['rescued_adult'])
+        add_labeled_row('Rescued Child (Below 18)', report['data']['rescued_child'])
+        add_labeled_row('Fire Personnel Injuries', report['data']['fire_personnel_injuries'])
+        add_labeled_row('Animals Rescued', report['data']['animals_rescued'])
+        add_labeled_row('Animals Lost', report['data']['animals_lost'])
+        current_row += 1
+        
+        # EMERGENCY RESPONSE SECTION
+        add_section_header('EMERGENCY RESPONSE')
+        add_labeled_row('Hospital / Doctor', report['data']['hospital_doctor'])
+        add_labeled_row('Ambulance / Police Notified Time', report['data']['ambulance_notified'])
+        add_labeled_row('Appliances & Crews Attended', report['data']['appliances_crews'])
+        add_labeled_row('Officer In Charge', report['data']['officer_in_charge'])
+        add_labeled_row('Equipment Used', report['data']['equipment_used'])
+        current_row += 1
+        
+        # PROPERTY & DAMAGE SECTION
+        add_section_header('PROPERTY & DAMAGE ASSESSMENT')
+        add_labeled_row('Property Removed', report['data']['property_removed'])
+        add_labeled_row('Property Saved', report['data']['property_saved'])
+        add_labeled_row('Property Lost', report['data']['property_lost'])
+        add_labeled_row('Building Damage', report['data']['building_damage'])
+        add_labeled_row('Items Destroyed', report['data']['items_destroyed'])
+        add_labeled_row('Cause of Major Loss', report['data']['major_loss_cause'])
+        current_row += 1
+        
+        # ADDITIONAL INFORMATION SECTION
+        add_section_header('ADDITIONAL INFORMATION')
+        add_labeled_row('Assistance Details', report['data']['assistance_details'])
+        current_row += 2
+    
+    # Add summary footer
+    ws.merge_cells(f'A{current_row}:F{current_row}')
+    summary_cell = ws[f'A{current_row}']
+    summary_cell.value = f'Total Reports: {len(all_reports)} | Firewater: {len(qs_fire)} | General Incident: {len(qs_general)} | Assistance Call: {len(qs_assist)}'
+    summary_cell.font = Font(name='Arial', size=10, bold=True, italic=True)
+    summary_cell.fill = PatternFill(start_color='E7E6E6', end_color='E7E6E6', fill_type='solid')
+    summary_cell.alignment = center_alignment
+    summary_cell.border = thin_border
+    ws.row_dimensions[current_row].height = 25
+    
+    # Adjust column widths
+    ws.column_dimensions['A'].width = 35
+    ws.column_dimensions['B'].width = 40
+    ws.column_dimensions['C'].width = 35
+    ws.column_dimensions['D'].width = 40
+    ws.column_dimensions['E'].width = 25
+    ws.column_dimensions['F'].width = 25
+    
+    # Create HTTP response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = f'attachment; filename="Reports_{datetime.now().strftime("%d%m_%H%M")}.xlsx"'
+    
+    wb.save(response)
     return response
 
 
@@ -1101,9 +1295,16 @@ def adminanalytics(request):
     return render(request, 'adminanalytics.html', {'analysis': analysis})
 
 
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
+from django.http import HttpResponse
+from datetime import datetime
+import io
+
 def download_analytics_csv(request):
     """
-    View to download analytics data as CSV with corrected logic
+    View to download analytics data as professionally formatted Excel file
     """
     # Get filter parameters
     month = request.GET.get('month', '')
@@ -1136,7 +1337,7 @@ def download_analytics_csv(request):
         q_general = [c for c in q_general if c.form_date <= enddate]
         q_assist = [c for c in q_assist if c.form_date <= enddate]
     
-    # Calculate statistics using corrected logic
+    # Calculate statistics
     total_cases = len(q_fire) + len(q_general) + len(q_assist)
     assistance_calls = len(q_assist)
     
@@ -1169,6 +1370,7 @@ def download_analytics_csv(request):
     
     # Water related incidents
     q_water = [c for c in q_fire if 'water' in c.incident.lower()]
+    qfire = [c for c in q_fire if c.incident and c.incident.lower() == 'fire']
     
     water_deaths_male = sum([int(c.deaths_male or 0) for c in q_water])
     water_deaths_female = sum([int(c.deaths_female or 0) for c in q_water])
@@ -1179,63 +1381,446 @@ def download_analytics_csv(request):
     water_rescued_female = sum([int(c.rescued_female or 0) for c in q_water])
     water_rescued_adult = sum([int(c.rescued_adult or 0) for c in q_water])
     water_rescued_child = sum([int(c.rescued_child or 0) for c in q_water])
+
+    # Property saved and lost - CORRECTED
+    fireproperty_saved = sum([
+        int(c.property_saved or 0)
+        for c in q_fire if c.incident and c.incident.lower() == 'fire'
+    ])
+
+    waterproperty_saved = sum([
+        int(c.property_saved or 0)
+        for c in q_fire if c.incident and 'water' in c.incident.lower()
+    ])
+
+    fireproperty_lost = sum([
+        int(c.property_lost or 0)
+        for c in q_fire if c.incident and c.incident.lower() == 'fire'
+    ])
+
+    waterproperty_lost = sum([
+        int(c.property_lost or 0)
+        for c in q_fire if c.incident and 'water' in c.incident.lower()
+    ])
     
-    # Create the HttpResponse object with CSV header
-    response = HttpResponse(content_type='text/csv')
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Analytics Report"
     
-    # Generate filename with timestamp
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f'incidents_analytics_{timestamp}.csv'
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    # Define styles
+    title_font = Font(name='Arial', size=18, bold=True, color='FFFFFF')
+    title_fill = PatternFill(start_color='1F4E78', end_color='1F4E78', fill_type='solid')
     
-    # Create CSV writer
-    writer = csv.writer(response)
+    section_font = Font(name='Arial', size=14, bold=True, color='FFFFFF')
+    section_fill = PatternFill(start_color='2E5C8A', end_color='2E5C8A', fill_type='solid')
     
-    # Write header with filter information
-    writer.writerow(['Incidents Report Analytics'])
-    writer.writerow(['Generated on:', datetime.now().strftime('%Y-%m-%d')])
+    subsection_font = Font(name='Arial', size=12, bold=True, color='FFFFFF')
+    subsection_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
+    
+    header_font = Font(name='Arial', size=11, bold=True, color='FFFFFF')
+    header_fill = PatternFill(start_color='5B9BD5', end_color='5B9BD5', fill_type='solid')
+    
+    data_font = Font(name='Arial', size=10)
+    alt_fill = PatternFill(start_color='E7E6E6', end_color='E7E6E6', fill_type='solid')
+    
+    center_align = Alignment(horizontal='center', vertical='center', wrap_text=True)
+    left_align = Alignment(horizontal='left', vertical='center', wrap_text=True)
+    right_align = Alignment(horizontal='right', vertical='center')
+    
+    thin_border = Border(
+        left=Side(style='thin', color='000000'),
+        right=Side(style='thin', color='000000'),
+        top=Side(style='thin', color='000000'),
+        bottom=Side(style='thin', color='000000')
+    )
+    
+    # Set column widths
+    ws.column_dimensions['A'].width = 35
+    ws.column_dimensions['B'].width = 18
+    ws.column_dimensions['C'].width = 18
+    ws.column_dimensions['D'].width = 25
+    
+    row = 1
+    
+    # ========== MAIN TITLE ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'INCIDENT ANALYTICS REPORT'
+    cell.font = title_font
+    cell.fill = title_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 35
+    row += 1
+    
+    # Report info section
+    ws.merge_cells(f'A{row}:B{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'Report Generated:'
+    cell.font = Font(name='Arial', size=10, bold=True)
+    cell.alignment = left_align
+    ws[f'C{row}'] = datetime.now().strftime('%B %d, %Y at %I:%M %p')
+    ws[f'C{row}'].font = data_font
+    ws[f'C{row}'].alignment = left_align
+    row += 1
+    
+    # Filter information
+    ws.merge_cells(f'A{row}:B{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'Report Period:'
+    cell.font = Font(name='Arial', size=10, bold=True)
+    cell.alignment = left_align
     
     if month:
-        writer.writerow(['Filtered by Month:', month])
-    if start and end:
-        writer.writerow(['Date Range:', f'{start} to {end}'])
+        month_name = datetime.strptime(month + '-01', '%Y-%m-%d').strftime('%B %Y')
+        filter_text = month_name
+    elif start and end:
+        filter_text = f'{start} to {end}'
     elif start:
-        writer.writerow(['Start Date:', start])
+        filter_text = f'From {start} onwards'
     elif end:
-        writer.writerow(['End Date:', end])
+        filter_text = f'Up to {end}'
+    else:
+        filter_text = 'All Records'
     
-    writer.writerow([])  # Empty row for spacing
+    ws[f'C{row}'] = filter_text
+    ws[f'C{row}'].font = data_font
+    ws[f'C{row}'].alignment = left_align
+    row += 2
     
-    # Write column headers
-    writer.writerow(['Category', 'Total Cases', 'Notes'])
+    # ========== SECTION 1: OVERVIEW ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'SECTION 1: OVERALL STATISTICS'
+    cell.font = section_font
+    cell.fill = section_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 25
+    row += 1
     
-    # Write data rows
-    writer.writerow(['Total Cases', total_cases, ''])
-    writer.writerow(['Assistance Calls', assistance_calls, ''])
-    writer.writerow(['Vehicle Accidents', vehicle_accidents, ''])
-    writer.writerow(['Well Related', well_related, ''])
-    writer.writerow(['Lift Accidents', lift_accidents, ''])
-    writer.writerow(['Quarry', quarry, ''])
-    writer.writerow(['Landslides', landslides, ''])
-    writer.writerow(['Building Collapse', building_collapse, ''])
-    writer.writerow(['Tree Related', tree_related, ''])
-    writer.writerow(['Animal Calls', animal_calls, ''])
-    writer.writerow(['Animal Rescued', animals_rescued, ''])
-    writer.writerow(['Animal Lost', animals_lost, ''])
-    writer.writerow(['Human Rescued', human_rescued, ''])
-    writer.writerow(['Human Lost', human_lost, ''])
+    # Table headers
+    headers = ['Metric', 'Count']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
     
-    # Water Related section
-    writer.writerow([])
-    writer.writerow(['Water Related Incidents', '', ''])
-    writer.writerow(['Deaths - Male', water_deaths_male, ''])
-    writer.writerow(['Deaths - Female', water_deaths_female, ''])
-    writer.writerow(['Deaths - Adult (Above 18)', water_deaths_adult, ''])
-    writer.writerow(['Deaths - Child (Below 18)', water_deaths_child, ''])
-    writer.writerow(['Rescued - Male', water_rescued_male, ''])
-    writer.writerow(['Rescued - Female', water_rescued_female, ''])
-    writer.writerow(['Rescued - Adult (Above 18)', water_rescued_adult, ''])
-    writer.writerow(['Rescued - Child (Below 18)', water_rescued_child, ''])
+    # Data rows
+    overview_data = [
+        ['Total Incidents', total_cases],
+        ['Assistance Calls', assistance_calls],
+        ['Fire Incidents', len(qfire)],
+        ['Water Incidents', len(q_water)],
+        ['General Incidents', len(q_general)]
+    ]
+    
+    for idx, data_row in enumerate(overview_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 1
+    
+    # ========== SECTION 2: INCIDENT CATEGORIES ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'SECTION 2: INCIDENT BREAKDOWN BY CATEGORY'
+    cell.font = section_font
+    cell.fill = section_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 25
+    row += 1
+    
+    # Table headers
+    headers = ['Incident Type', 'Number of Cases']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
+    
+    # Data rows
+    incident_data = [
+        ['Vehicle Accidents', vehicle_accidents],
+        ['Well Related Incidents', well_related],
+        ['Lift Accidents', lift_accidents],
+        ['Quarry Incidents', quarry],
+        ['Landslides', landslides],
+        ['Building Collapse', building_collapse],
+        ['Tree Related Incidents', tree_related],
+        ['Animal Related Calls', animal_calls]
+    ]
+    
+    for idx, data_row in enumerate(incident_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 1
+
+
+        # ========== SECTION 3: PROPERTIES CATEGORIES ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'SECTION 3: PROPERTY ASSESSMENT'
+    cell.font = section_font
+    cell.fill = section_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 25
+    row += 1
+    
+    # Table headers
+    headers = ['Incident Type', 'Total Property Saved', 'Total Property Lost']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
+    
+    # Data rows
+    incident_data = [
+        ['Fire', fireproperty_saved, fireproperty_lost],
+        ['Water', waterproperty_saved, waterproperty_lost],
+    ]
+    
+    for idx, data_row in enumerate(incident_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 1
+    
+    # ========== SECTION 4: RESCUE & CASUALTY STATISTICS ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'SECTION 4: RESCUE & CASUALTY STATISTICS'
+    cell.font = section_font
+    cell.fill = section_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 25
+    row += 1
+    
+    # Table headers
+    headers = ['Category', 'Rescued', 'Lost/Deceased', 'Survival Rate']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
+    
+    # Data rows
+    human_total = human_rescued + human_lost
+    animal_total = animals_rescued + animals_lost
+    
+    rescue_data = [
+        ['Humans', human_rescued, human_lost, f'{(human_rescued/human_total*100):.1f}%' if human_total > 0 else 'N/A'],
+        ['Animals', animals_rescued, animals_lost, f'{(animals_rescued/animal_total*100):.1f}%' if animal_total > 0 else 'N/A']
+    ]
+    
+    for idx, data_row in enumerate(rescue_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 1
+    
+    # ========== SECTION 5: WATER RELATED INCIDENTS ==========
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'SECTION 5: WATER RELATED INCIDENTS'
+    cell.font = section_font
+    cell.fill = section_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 25
+    row += 1
+    
+    # Summary info
+    ws.merge_cells(f'A{row}:B{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'Total Water Related Incidents:'
+    cell.font = Font(name='Arial', size=11, bold=True)
+    cell.alignment = left_align
+    ws[f'C{row}'] = len(q_water)
+    ws[f'C{row}'].font = Font(name='Arial', size=11, bold=True)
+    ws[f'C{row}'].alignment = center_align
+    row += 2
+    
+    # Subsection: Deaths
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = '4.1 CASUALTIES (Deaths)'
+    cell.font = subsection_font
+    cell.fill = subsection_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 22
+    row += 1
+    
+    # Table headers
+    headers = ['Category', 'Count', 'Percentage', 'Age Group']
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
+    
+    total_water_deaths = water_deaths_male + water_deaths_female
+    
+    death_data = [
+        ['Male Deaths', water_deaths_male, f'{(water_deaths_male/total_water_deaths*100):.1f}%' if total_water_deaths > 0 else '0%', 'All Ages'],
+        ['Female Deaths', water_deaths_female, f'{(water_deaths_female/total_water_deaths*100):.1f}%' if total_water_deaths > 0 else '0%', 'All Ages'],
+        ['Adult Deaths', water_deaths_adult, f'{(water_deaths_adult/total_water_deaths*100):.1f}%' if total_water_deaths > 0 else '0%', '18+ years'],
+        ['Child Deaths', water_deaths_child, f'{(water_deaths_child/total_water_deaths*100):.1f}%' if total_water_deaths > 0 else '0%', '<18 years'],
+        ['TOTAL DEATHS', total_water_deaths]
+    ]
+    
+    for idx, data_row in enumerate(death_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            if idx == len(death_data) - 1:
+                cell.font = Font(name='Arial', size=10, bold=True)
+            else:
+                cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1 and idx != len(death_data) - 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 1
+    
+    # Subsection: Rescues
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = '4.2 SUCCESSFUL RESCUES'
+    cell.font = subsection_font
+    cell.fill = subsection_fill
+    cell.alignment = center_align
+    ws.row_dimensions[row].height = 22
+    row += 1
+    
+    # Table headers
+    for col, header in enumerate(headers, start=1):
+        cell = ws.cell(row=row, column=col)
+        cell.value = header
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        cell.border = thin_border
+    row += 1
+    
+    total_water_rescued = water_rescued_male + water_rescued_female
+    
+    rescue_data = [
+        ['Male Rescued', water_rescued_male, f'{(water_rescued_male/total_water_rescued*100):.1f}%' if total_water_rescued > 0 else '0%', 'All Ages'],
+        ['Female Rescued', water_rescued_female, f'{(water_rescued_female/total_water_rescued*100):.1f}%' if total_water_rescued > 0 else '0%', 'All Ages'],
+        ['Adults Rescued', water_rescued_adult, f'{(water_rescued_adult/total_water_rescued*100):.1f}%' if total_water_rescued > 0 else '0%', '18+ years'],
+        ['Children Rescued', water_rescued_child, f'{(water_rescued_child/total_water_rescued*100):.1f}%' if total_water_rescued > 0 else '0%', '<18 years'],
+        ['TOTAL RESCUED', total_water_rescued]
+    ]
+    
+    for idx, data_row in enumerate(rescue_data):
+        for col, value in enumerate(data_row, start=1):
+            cell = ws.cell(row=row, column=col)
+            cell.value = value
+            if idx == len(rescue_data) - 1:
+                cell.font = Font(name='Arial', size=10, bold=True)
+            else:
+                cell.font = data_font
+            cell.border = thin_border
+            if col == 1:
+                cell.alignment = left_align
+            else:
+                cell.alignment = center_align
+            if idx % 2 == 1 and idx != len(rescue_data) - 1:
+                cell.fill = alt_fill
+        row += 1
+    row += 2
+    
+    # Footer
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
+    cell.alignment = center_align
+    row += 1
+    
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'END OF REPORT'
+    cell.font = Font(name='Arial', size=11, bold=True)
+    cell.alignment = center_align
+    row += 1
+    
+    ws.merge_cells(f'A{row}:D{row}')
+    cell = ws[f'A{row}']
+    cell.value = 'This report contains statistical data for the specified time period. For detailed incident records, please refer to individual case files.'
+    cell.font = Font(name='Arial', size=9, italic=True)
+    cell.alignment = center_align
+    
+    # Save to BytesIO
+    output = io.BytesIO()
+    wb.save(output)
+    output.seek(0)
+    
+    # Create response
+    response = HttpResponse(
+        output.read(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    
+    timestamp = datetime.now().strftime('%d%m_%H%M')
+    filename = f'Incident_Analytics_Report_{timestamp}.xlsx'
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     
     return response
 
